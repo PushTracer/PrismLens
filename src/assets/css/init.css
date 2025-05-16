@@ -1,0 +1,40 @@
+/**
+ * 清除浏览器默认样式
+ * 本小姐精心编写的重置样式，要好好使用哦！
+ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 列表样式清除 */
+ul, ol {
+  list-style: none;
+}
+
+/* 链接样式重置 */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* 表单元素重置 */
+input, button, textarea, select {
+  font: inherit;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+/* 图片处理 */
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* 表格样式重置 */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
