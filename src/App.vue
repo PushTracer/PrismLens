@@ -23,6 +23,9 @@ async function greet() {
 		</form>
 		<p>{{ greetMsg }}</p>
 	</main>
+	<n-button type="primary"> Primary </n-button>
+	<div style="font-family: Lato">Primary</div>
+	<div>Primary</div>
 </template>
 
 <style scoped></style>
