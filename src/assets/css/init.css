@@ -1,6 +1,6 @@
 /**
- * 清除浏览器默认样式
- * 本小姐精心编写的重置样式，要好好使用哦！
+ * CSS Reset
+ * Reset default browser styles for consistent cross-browser rendering
  */
 * {
   margin: 0;
@@ -8,18 +8,18 @@
   box-sizing: border-box;
 }
 
-/* 列表样式清除 */
+/* Remove list styling */
 ul, ol {
   list-style: none;
 }
 
-/* 链接样式重置 */
+/* Reset link styles */
 a {
   text-decoration: none;
   color: inherit;
 }
 
-/* 表单元素重置 */
+/* Form elements reset */
 input, button, textarea, select {
   font: inherit;
   border: none;
@@ -27,13 +27,13 @@ input, button, textarea, select {
   background: none;
 }
 
-/* 图片处理 */
+/* Image handling */
 img {
   max-width: 100%;
   display: block;
 }
 
-/* 表格样式重置 */
+/* Table reset */
 table {
   border-collapse: collapse;
   border-spacing: 0;
