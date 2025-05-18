@@ -1,16 +1,84 @@
-# Tauri + Vue + TypeScript
+# RView - 现代化的图片查看工具
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+## 项目简介
 
-## Recommended IDE Setup
+RView是一款基于Tauri + Vue3 + TypeScript开发的现代化图片查看工具。它不仅提供了强大的图片查看和处理功能，还计划集成社交分享和AI增强特性，致力于打造一个高性能、易用性强的图片管理工具。
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+## 核心特性
 
-## Type Support For `.vue` Imports in TS
+### 1. 图片基础功能
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's Take Over mode by following these steps:
+- 🖼️ 多格式图片查看和浏览
+- 🔄 基础图片操作
+  - 旋转
+  - 缩放
+  - 拖拽
+- 🎨 图片格式转换
+- ✂️ 图片裁剪
 
-1. Run `Extensions: Show Built-in Extensions` from VS Code's command palette, look for `TypeScript and JavaScript Language Features`, then right click and select `Disable (Workspace)`. By default, Take Over mode will enable itself if the default TypeScript extension is disabled.
-2. Reload the VS Code window by running `Developer: Reload Window` from the command palette.
+### 2. 社交分享功能
 
-You can learn more about Take Over mode [here](https://github.com/johnsoncodehk/volar/discussions/471).
+- 📱 QQ分享集成
+- 🌐 预留其他社交平台分享接口
+
+### 3. AI增强功能（规划中）
+
+- 🤖 智能图片识别
+- ⭐ AI图片评分
+- 🏷️ 智能标签系统
+
+## 技术栈
+
+### 前端技术
+
+- Vue 3
+- TypeScript
+- Vite
+- Naive UI
+- @vueuse/core
+- Vue Router
+- Pinia
+
+### 后端技术
+
+- Tauri (Rust)
+- tokio
+- image-rs
+- serde
+- reqwest
+
+## 性能优化
+
+- 📊 Rust处理性能密集型任务
+- 🚀 WebAssembly优化
+- 🔄 图片懒加载与预加载
+- 📱 虚拟滚动
+- 💾 智能缓存机制
+
+## 开发计划
+
+1. 第一阶段：基础功能实现
+   - 图片查看和浏览
+   - 基础图片操作
+   - 性能优化
+
+2. 第二阶段：社交分享
+   - QQ分享功能
+   - 其他平台分享接口预留
+
+3. 第三阶段：AI增强
+   - 图片识别
+   - AI评分系统
+   - 智能标签
+
+## 贡献指南
+
+欢迎提交Issue和Pull Request！
+
+## 许可证
+
+MIT License
+
+## 联系方式
+
+[待补充]
