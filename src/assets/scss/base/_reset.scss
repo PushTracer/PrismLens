@@ -1,0 +1,44 @@
+/**
+ * CSS Reset
+ * Reset default browser styles for consistent cross-browser rendering
+ */
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+/* Remove list styling */
+ul,
+ol {
+	list-style: none;
+}
+
+/* Reset link styles */
+a {
+	text-decoration: none;
+	color: inherit;
+}
+
+/* Form elements reset */
+input,
+button,
+textarea,
+select {
+	font: inherit;
+	border: none;
+	outline: none;
+	background: none;
+}
+
+/* Image handling */
+img {
+	max-width: 100%;
+	display: block;
+}
+
+/* Table reset */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
