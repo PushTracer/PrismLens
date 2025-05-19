@@ -1,5 +1,5 @@
-import { createPinia } from "pinia";
-
-const store = createPinia();
-
-export default store;
+/*
+  入口文件，加载状态管理
+*/
+export * from "./theme";
+export * from "./images";

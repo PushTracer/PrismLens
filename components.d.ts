@@ -8,8 +8,23 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    NA: typeof import('naive-ui')['NA']
     NButton: typeof import('naive-ui')['NButton']
+    NCard: typeof import('naive-ui')['NCard']
+    NCode: typeof import('naive-ui')['NCode']
+    NH1: typeof import('naive-ui')['NH1']
+    NH2: typeof import('naive-ui')['NH2']
+    NH3: typeof import('naive-ui')['NH3']
+    NH4: typeof import('naive-ui')['NH4']
+    NH5: typeof import('naive-ui')['NH5']
+    NH6: typeof import('naive-ui')['NH6']
+    NInput: typeof import('naive-ui')['NInput']
+    NSpace: typeof import('naive-ui')['NSpace']
+    NText: typeof import('naive-ui')['NText']
+    NThemeSwitch: typeof import('naive-ui')['NThemeSwitch']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Themeswitch: typeof import('./src/components/themeswitch.vue')['default']
+    ThemeSwitch: typeof import('./src/components/themeSwitch.vue')['default']
   }
 }
