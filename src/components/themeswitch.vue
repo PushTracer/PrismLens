@@ -8,22 +8,25 @@ const isDark = ref(themeStore.theme === "dark");
 
 // 开关轨道样式
 const railStyle = ({ checked }: { checked: boolean }) => {
-  const style = {
-    background: checked ? "#18a058" : "#2080f0",
-    "--n-rail-color-hover": checked ? "#36ad6a" : "#4098fc",
-  };
-  return style;
+	const style = {
+		background: checked ? "#18a058" : "#2080f0",
+		"--n-rail-color-hover": checked ? "#36ad6a" : "#4098fc",
+	};
+	return style;
 };
 
 // 主题切换处理
 const handleThemeChange = (value: boolean) => {
-  themeStore.theme = value ? "dark" : "light";
+	themeStore.theme = value ? "dark" : "light";
 };
 
 // 监听 store 中的主题变化
-watch(() => themeStore.theme, (newTheme) => {
-  isDark.value = newTheme === "dark";
-});
+watch(
+	() => themeStore.theme,
+	(newTheme) => {
+		isDark.value = newTheme === "dark";
+	}
+);
 </script>
 
 <template>
@@ -42,7 +45,7 @@ watch(() => themeStore.theme, (newTheme) => {
 <style>
 .theme-switch {
 	position: fixed;
-	top: 1rem;
+	top: 3rem;
 	right: 1rem;
 	z-index: 100;
 }

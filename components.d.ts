@@ -18,7 +18,9 @@ declare module 'vue' {
     NH4: typeof import('naive-ui')['NH4']
     NH5: typeof import('naive-ui')['NH5']
     NH6: typeof import('naive-ui')['NH6']
+    NIcon: typeof import('naive-ui')['NIcon']
     NInput: typeof import('naive-ui')['NInput']
+    NLayout: typeof import('naive-ui')['NLayout']
     NSpace: typeof import('naive-ui')['NSpace']
     NText: typeof import('naive-ui')['NText']
     NThemeSwitch: typeof import('naive-ui')['NThemeSwitch']
@@ -26,5 +28,6 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Themeswitch: typeof import('./src/components/themeswitch.vue')['default']
     ThemeSwitch: typeof import('./src/components/themeSwitch.vue')['default']
+    TitleBar: typeof import('./src/components/TitleBar.vue')['default']
   }
 }

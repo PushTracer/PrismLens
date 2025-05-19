@@ -1,0 +1,50 @@
+.title-bar {
+	height: 32px;
+	background: v-bind('themeStore.theme === "dark" ? "#1a1a1a" : "#ffffff"');
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 16px;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.title {
+	font-size: 14px;
+	font-weight: 500;
+	color: v-bind('themeStore.theme === "dark" ? "#FFFFFF" : "#2C3E50"');
+}
+
+.window-controls {
+	display: flex;
+	gap: 4px;
+}
+
+.control-btn {
+	transition: all 0.2s ease-in-out;
+}
+
+.control-btn:hover {
+	background-color: v-bind(
+		'themeStore.theme === "dark" ? "#333333" : "#E8E8E8"'
+	) !important;
+}
+
+.control-btn:active {
+	background-color: v-bind(
+		'themeStore.theme === "dark" ? "#444444" : "#D0D0D0"'
+	) !important;
+}
+
+.close-btn {
+	transition: all 0.2s ease-in-out;
+}
+
+.close-btn:hover {
+	color: #fff;
+	background-color: #e81123 !important;
+}
+
+.close-btn:active {
+	background-color: #f1707a !important;
+}

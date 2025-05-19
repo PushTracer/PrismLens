@@ -18,7 +18,7 @@ src/assets/scss/
 │   ├── _cards.scss        # 卡片样式
 │   └── _modals.scss       # 模态框样式
 ├── layout/                # 布局层
-│   ├── _header.scss       # 头部样式
+│   ├── _titlebar.scss       # 标题栏样式
 │   ├── _footer.scss       # 底部样式
 │   └── _grid.scss         # 网格系统
 ├── pages/                 # 页面层
