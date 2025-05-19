@@ -4,7 +4,7 @@
 @use "base/reset";
 @use "base/typography";
 // layout
-@import "layout/_titlebar";
+@use "layout/_titlebar";
 
 // 其他导入暂时注释掉了，等需要的时候再一起改成 @use
 
