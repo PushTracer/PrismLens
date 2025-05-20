@@ -8,6 +8,10 @@ import { useMessage } from "naive-ui"; // 导入 useMessage
 const imageList = ref<ImageInfo[]>([]);
 const currentImage = ref<ImageInfo | null>(null);
 const message = useMessage(); // 创建 message 实例
+//test 开发模式也没有生效 待解决
+const rawPath = "E:/图片/Screenshots/屏幕截图 2024-12-06 204718.png";
+const encodedPath = `local-image://${encodeURI(rawPath)}`;
+// const encodedPath = `file:///${rawPath.replace(/\\/g, "/")}`;
 /*
  * 选择目录
  */
@@ -179,6 +183,9 @@ const resizeHeight = ref<number | null>(null);
 						</n-list-item>
 					</n-list>
 				</n-card>
+				<div>
+					<img :src="encodedPath" />
+				</div>
 			</n-grid-item>
 		</n-grid>
 	</n-space>
