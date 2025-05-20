@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "rview",
+        "title": "main",
         "width": 1200,
         "height": 700,
         "decorations": false
@@ -32,5 +32,8 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "dialog": null
   }
 }

@@ -26,11 +26,13 @@ const themeStore = useThemeStore();
 		<n-layout>
 			<TitleBar />
 			<n-space>
-				<ThemeSwitch />
-				<n-card>
-					<router-view></router-view>
-					<router-link to="/image">跳转</router-link>
-				</n-card>
+				<n-message-provider>
+					<ThemeSwitch />
+					<n-card>
+						<router-view></router-view>
+						<router-link to="/image">跳转</router-link>
+					</n-card>
+				</n-message-provider>
 			</n-space>
 		</n-layout>
 	</n-config-provider>
