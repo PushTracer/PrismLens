@@ -21,7 +21,7 @@ async function selectDirectory() {
 		});
 
 		if (selected) {
-			const result = await invoke("read_image_list_command", {
+			const result = await invoke("get_directory_images_command", {
 				dirPath: selected,
 			});
 			imageList.value = result as ImageInfo[];
@@ -35,8 +35,15 @@ async function selectDirectory() {
  * 显示图片信息
  * @param image 图片信息对象
  */
-async function showImageInfo(image: ImageInfo) {
-	currentImage.value = image;
+async function showImageInfo(path: string) {
+	try {
+		const result = await invoke("read_image_info_command", {
+			path: path,
+		});
+		currentImage.value = result as ImageInfo;
+	} catch (error) {
+		message.error("获取图片信息失败：" + error);
+	}
 }
 
 /**
@@ -186,7 +193,7 @@ const resizeHeight = ref<number | null>(null);
 						<n-list-item
 							v-for="image in imageList"
 							:key="image.path"
-							@click="showImageInfo(image)"
+							@click="showImageInfo(image.path)"
 						>
 							{{ image.name }}
 						</n-list-item>

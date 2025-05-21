@@ -1,4 +1,5 @@
 use image::ImageFormat;
+use image::ImageReader;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
@@ -13,6 +14,15 @@ pub struct ImageInfo {
     pub format: String, // 图片格式
     pub size: u64,      // 图片大小（字节）
     pub modified: u64,  // 最后修改时间
+}
+
+/// 图片简略信息结构体
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct ImageBasicInfo {
+    pub path: String,  // 图片路径
+    pub name: String,  // 图片名称
+    pub size: u64,     // 图片大小（字节）
+    pub modified: u64, // 最后修改时间
 }
 
 /// 图片处理错误
@@ -37,8 +47,9 @@ pub enum ImageError {
 /// 图片处理结果类型
 pub type Result<T> = std::result::Result<T, ImageError>;
 
-/// 获取图片信息
-pub fn get_image_info(path: &str) -> Result<ImageInfo> {
+/// 读取图片信息
+/// 读取图片信息
+pub fn read_image_info(path: &str) -> Result<ImageInfo> {
     let path_obj = Path::new(path);
 
     // 检查文件是否存在
@@ -49,8 +60,9 @@ pub fn get_image_info(path: &str) -> Result<ImageInfo> {
     // 获取文件元数据
     let metadata = fs::metadata(path)?;
 
-    // 读取图片
-    let img = image::open(path)?;
+    // 只读取图片头部信息
+    let reader = ImageReader::open(path)?;
+    let dimensions = reader.into_dimensions()?;
 
     // 获取文件名
     let name = path_obj
@@ -79,15 +91,15 @@ pub fn get_image_info(path: &str) -> Result<ImageInfo> {
     Ok(ImageInfo {
         path: path.to_string(),
         name,
-        width: img.width(),
-        height: img.height(),
+        width: dimensions.0,
+        height: dimensions.1,
         format,
         size: metadata.len(),
         modified,
     })
 }
 
-/// 读取目录中的所有图片
+/// 读取目录中的所有图片 （读取全部信息，性能消耗过大，暂时不使用）
 pub fn read_image_list(dir_path: &str) -> Result<Vec<ImageInfo>> {
     let path = Path::new(dir_path);
 
@@ -110,9 +122,59 @@ pub fn read_image_list(dir_path: &str) -> Result<Vec<ImageInfo>> {
         if path.is_file() {
             if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
                 if supported_formats.contains(&ext.to_lowercase().as_str()) {
-                    if let Ok(info) = get_image_info(path.to_str().unwrap_or_default()) {
+                    if let Ok(info) = read_image_info(path.to_str().unwrap_or_default()) {
                         images.push(info);
                     }
+                }
+            }
+        }
+    }
+
+    Ok(images)
+}
+
+/// 获取目录中所有图片的基础信息
+pub fn get_directory_images(dir_path: &str) -> Result<Vec<ImageBasicInfo>> {
+    let path = Path::new(dir_path);
+
+    if !path.exists() || !path.is_dir() {
+        return Err(ImageError::InvalidPath(dir_path.to_string()));
+    }
+
+    let mut images = Vec::new();
+    let supported_formats = [
+        "jpg", "jpeg", "png", "gif", "webp", "bmp", "ico", "tiff", "tif",
+    ];
+
+    for entry in fs::read_dir(path)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if path.is_file() {
+            if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
+                if supported_formats.contains(&ext.to_lowercase().as_str()) {
+                    let metadata = fs::metadata(&path)?;
+                    let name = path
+                        .file_name()
+                        .and_then(|n| n.to_str())
+                        .unwrap_or("unknown")
+                        .to_string();
+
+                    let modified = metadata
+                        .modified()
+                        .map(|time| {
+                            time.duration_since(std::time::UNIX_EPOCH)
+                                .unwrap_or_default()
+                                .as_secs()
+                        })
+                        .unwrap_or(0);
+
+                    images.push(ImageBasicInfo {
+                        path: path.to_str().unwrap_or_default().to_string(),
+                        name,
+                        size: metadata.len(),
+                        modified,
+                    });
                 }
             }
         }

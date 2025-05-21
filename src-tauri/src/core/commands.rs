@@ -1,18 +1,25 @@
 use crate::core::image::{
-    convert_image_format, get_image_info, read_image_list, resize_image, rotate_image, ImageInfo,
+    convert_image_format, get_directory_images, read_image_info, read_image_list, resize_image,
+    rotate_image, ImageBasicInfo, ImageInfo,
 };
 use tauri::command;
 
 /// 获取图片信息命令
 #[command]
-pub async fn get_image_info_command(path: String) -> Result<ImageInfo, String> {
-    get_image_info(&path).map_err(|e| e.to_string())
+pub async fn read_image_info_command(path: String) -> Result<ImageInfo, String> {
+    read_image_info(&path).map_err(|e| e.to_string())
 }
 
 /// 读取目录中的所有图片命令
 #[command]
 pub async fn read_image_list_command(dir_path: String) -> Result<Vec<ImageInfo>, String> {
     read_image_list(&dir_path).map_err(|e| e.to_string())
+}
+
+/// 获取目录中的所有图片简略信息命令
+#[command]
+pub async fn get_directory_images_command(dir_path: String) -> Result<Vec<ImageBasicInfo>, String> {
+    get_directory_images(&dir_path).map_err(|e| e.to_string())
 }
 
 /// 旋转图片命令
