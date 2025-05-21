@@ -10,23 +10,18 @@ declare module 'vue' {
   export interface GlobalComponents {
     Imagelist: typeof import('./src/components/imagelist.vue')['default']
     Imageoperation: typeof import('./src/components/imageoperation.vue')['default']
-    Message: typeof import('./src/components/message.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
-    NCard: typeof import('naive-ui')['NCard']
     NEmpty: typeof import('naive-ui')['NEmpty']
     NGrid: typeof import('naive-ui')['NGrid']
     NGridItem: typeof import('naive-ui')['NGridItem']
     NIcon: typeof import('naive-ui')['NIcon']
-    NInputNumber: typeof import('naive-ui')['NInputNumber']
     NLayout: typeof import('naive-ui')['NLayout']
     NList: typeof import('naive-ui')['NList']
     NListItem: typeof import('naive-ui')['NListItem']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
-    NSpace: typeof import('naive-ui')['NSpace']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Themeswitch: typeof import('./src/components/themeswitch.vue')['default']
     Titlebar: typeof import('./src/components/titlebar.vue')['default']
-    TitleBar: typeof import('./src/components/TitleBar.vue')['default']
   }
 }
