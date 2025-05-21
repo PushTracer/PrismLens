@@ -1,3 +1,4 @@
+use image::DynamicImage;
 use image::ImageFormat;
 use image::ImageReader;
 use serde::{Deserialize, Serialize};
@@ -47,7 +48,6 @@ pub enum ImageError {
 /// 图片处理结果类型
 pub type Result<T> = std::result::Result<T, ImageError>;
 
-/// 读取图片信息
 /// 读取图片信息
 pub fn read_image_info(path: &str) -> Result<ImageInfo> {
     let path_obj = Path::new(path);
@@ -220,8 +220,13 @@ pub fn rotate_image(path: &str, angle: i32) -> Result<String> {
 /// 转换图片格式
 pub fn convert_image_format(path: &str, format: &str) -> Result<String> {
     // 读取图片
-    let img = image::open(path)?;
+    let mut img = image::open(path)?;
 
+    // 如果目标格式是 JPEG，去除透明度通道
+    if format.to_lowercase() == "jpg" || format.to_lowercase() == "jpeg" {
+        let rgb_img = img.to_rgb8(); // 返回 RgbImage
+        img = DynamicImage::ImageRgb8(rgb_img); // 包装成 DynamicImage
+    }
     // 获取目标格式
     let target_format = match format.to_lowercase().as_str() {
         "jpg" | "jpeg" => ImageFormat::Jpeg,

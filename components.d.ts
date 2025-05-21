@@ -8,6 +8,9 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Imagelist: typeof import('./src/components/imagelist.vue')['default']
+    Imageoperation: typeof import('./src/components/imageoperation.vue')['default']
+    Message: typeof import('./src/components/message.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NEmpty: typeof import('naive-ui')['NEmpty']
@@ -23,6 +26,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Themeswitch: typeof import('./src/components/themeswitch.vue')['default']
+    Titlebar: typeof import('./src/components/titlebar.vue')['default']
     TitleBar: typeof import('./src/components/TitleBar.vue')['default']
   }
 }

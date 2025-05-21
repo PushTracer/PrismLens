@@ -7,22 +7,22 @@ src/assets/scss/
 ├── abstracts/              # 抽象层
 │   ├── _variables.scss     # 变量定义
 │   ├── _functions.scss     # 函数定义
-│   ├── _mixins.scss       # 混合器定义
+│   ├── _mixins.scss        # 混合器定义
 │   └── _placeholders.scss  # 占位符定义
 ├── base/                   # 基础层
 │   ├── _reset.scss        # 重置样式
 │   ├── _typography.scss   # 排版样式
 │   └── _animations.scss   # 动画定义
 ├── components/            # 组件层
-│   ├── _buttons.scss      # 按钮样式
+│   ├── _imagelist.scss    # 图片列表样式
 │   ├── _cards.scss        # 卡片样式
 │   └── _modals.scss       # 模态框样式
 ├── layout/                # 布局层
-│   ├── _titlebar.scss       # 标题栏样式
-│   ├── _footer.scss       # 底部样式
-│   └── _grid.scss         # 网格系统
+│   ├── _titlebar.scss     # 标题栏样式
+│   └── _content.scss      # 主内容样式
 ├── pages/                 # 页面层
-│   └── _home.scss         # 首页特定样式
+│   ├── _home.scss         # 首页特定样式
+│   └── _imageview.scss    # 图片窗口样式
 ├── themes/                # 主题层
 │   ├── _light.scss        # 亮色主题
 │   └── _dark.scss         # 暗色主题

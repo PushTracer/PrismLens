@@ -4,22 +4,15 @@
 @use "base/reset";
 @use "base/typography";
 // layout
-@use "layout/_titlebar";
+@use "layout/titlebar";
+@use "layout/app";
+// Components
+@use "components/imagelist";
+@use "components/n-card";
+// Pages
+@use "pages/imageview";
 
 // 其他导入暂时注释掉了，等需要的时候再一起改成 @use
-
-// // Components
-// @import 'components/buttons';
-// @import 'components/cards';
-// @import 'components/modals';
-
-// // Layout
-// @import 'layout/header';
-// @import 'layout/footer';
-// @import 'layout/grid';
-
-// // Pages
-// @import 'pages/home';
 
 // // Themes
 // @import 'themes/light';

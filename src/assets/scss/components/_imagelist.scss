@@ -1,0 +1,7 @@
+.imagelist {
+	.n-card {
+		:deep(.n-card__content) {
+			padding: 0;
+		}
+	}
+}
