@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke, convertFileSrc } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import type { ImageInfo } from "../tauri-types";
 import { useMessage } from "naive-ui"; // 导入 useMessage
@@ -8,10 +8,9 @@ import { useMessage } from "naive-ui"; // 导入 useMessage
 const imageList = ref<ImageInfo[]>([]);
 const currentImage = ref<ImageInfo | null>(null);
 const message = useMessage(); // 创建 message 实例
-//test 开发模式也没有生效 待解决
+//放弃自定义协议使用官方的asset协议（自动处理开发与生产环境的路径）
 const rawPath = "E:/图片/Screenshots/屏幕截图 2024-12-06 204718.png";
-const encodedPath = `local-image://${encodeURI(rawPath)}`;
-// const encodedPath = `file:///${rawPath.replace(/\\/g, "/")}`;
+const encodedPath = convertFileSrc(rawPath);
 /*
  * 选择目录
  */
