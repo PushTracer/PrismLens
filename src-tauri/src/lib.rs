@@ -9,7 +9,6 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
-            greet,
             get_image_info_command,
             read_image_list_command,
             rotate_image_command,

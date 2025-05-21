@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { useThemeStore } from "../store";
-import { MinusOutlined, FullscreenOutlined, CloseOutlined } from "@vicons/antd";
+import {
+	MinusOutlined,
+	FullscreenOutlined,
+	CloseOutlined,
+	FullscreenExitOutlined,
+} from "@vicons/antd";
+import { ref } from "vue";
 
 // 获取当前窗口实例
 const appWindow = getCurrentWindow();
@@ -21,8 +27,10 @@ const handleMinimize = async () => {
 const handleMaximize = async () => {
 	if (await appWindow.isMaximized()) {
 		await appWindow.unmaximize();
+		isMaximized.value = false; // 手动更新状态
 	} else {
 		await appWindow.maximize();
+		isMaximized.value = true; // 手动更新状态
 	}
 };
 
@@ -32,6 +40,32 @@ const handleMaximize = async () => {
 const handleClose = async () => {
 	await appWindow.close();
 };
+
+const isMaximized = ref(false);
+
+// // 存储解除监听的函数
+// const unlisten = ref<(() => void)[]>([]);
+
+// onMounted(async () => {
+// 	isMaximized.value = await appWindow.isMaximized();
+// 	// 监听窗口状态变化
+// 	unlisten.value.push(
+// 		await appWindow.listen("tauri://window-event", (event: any) => {
+// 			if (event.event === "maximize") {
+// 				isMaximized.value = true;
+// 				console.log("maximize event triggered");
+// 			} else if (event.event === "unmaximize") {
+// 				isMaximized.value = false;
+// 				console.log("unmaximize event triggered");
+// 			}
+// 		})
+// 	);
+// });
+
+// onUnmounted(() => {
+// 	// 解除所有事件监听
+// 	unlisten.value.forEach((fn) => fn());
+// });
 </script>
 
 <template>
@@ -59,7 +93,8 @@ const handleClose = async () => {
 				@click="handleMaximize"
 			>
 				<n-icon :color="themeStore.theme === 'dark' ? '#FFFFFF' : '#2C3E50'">
-					<FullscreenOutlined />
+					<FullscreenExitOutlined v-if="isMaximized" />
+					<FullscreenOutlined v-else />
 				</n-icon>
 			</n-button>
 			<n-button

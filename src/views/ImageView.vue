@@ -8,9 +8,7 @@ import { useMessage } from "naive-ui"; // 导入 useMessage
 const imageList = ref<ImageInfo[]>([]);
 const currentImage = ref<ImageInfo | null>(null);
 const message = useMessage(); // 创建 message 实例
-//放弃自定义协议使用官方的asset协议（自动处理开发与生产环境的路径）
-const rawPath = "E:/图片/Screenshots/屏幕截图 2024-12-06 204718.png";
-const encodedPath = convertFileSrc(rawPath);
+
 /*
  * 选择目录
  */
@@ -125,9 +123,8 @@ const resizeHeight = ref<number | null>(null);
 					<template v-if="currentImage">
 						<!-- 图片显示 -->
 						<div>
-							<!-- 这里可以放置显示当前图片的元素，例如 <img> 标签 -->
 							<img
-								:src="currentImage.path"
+								:src="convertFileSrc(currentImage.path)"
 								alt="Current Image"
 								style="max-width: 100%; max-height: 600px"
 							/>
@@ -136,14 +133,26 @@ const resizeHeight = ref<number | null>(null);
 						<!-- 图片操作按钮 -->
 						<n-space>
 							<!-- 旋转 -->
-							<n-button @click="rotateImage(90)">旋转 90°</n-button>
-							<n-button @click="rotateImage(180)">旋转 180°</n-button>
-							<n-button @click="rotateImage(270)">旋转 270°</n-button>
+							<n-button tertiary type="primary" @click="rotateImage(90)"
+								>旋转 90°</n-button
+							>
+							<n-button tertiary type="primary" @click="rotateImage(180)"
+								>旋转 180°</n-button
+							>
+							<n-button tertiary type="primary" @click="rotateImage(270)"
+								>旋转 270°</n-button
+							>
 
 							<!-- 转换格式 -->
-							<n-button @click="convertFormat('png')">转为 PNG</n-button>
-							<n-button @click="convertFormat('jpg')">转为 JPG</n-button>
-							<n-button @click="convertFormat('webp')">转为 WebP</n-button>
+							<n-button tertiary type="info" @click="convertFormat('png')"
+								>转为 PNG</n-button
+							>
+							<n-button tertiary type="info" @click="convertFormat('jpg')"
+								>转为 JPG</n-button
+							>
+							<n-button tertiary type="info" @click="convertFormat('webp')"
+								>转为 WebP</n-button
+							>
 
 							<!-- 调整大小 -->
 							<n-space>
@@ -156,6 +165,7 @@ const resizeHeight = ref<number | null>(null);
 									placeholder="高度"
 								/>
 								<n-button
+									type="primary"
 									@click="resizeImage(resizeWidth || 0, resizeHeight || 0)"
 									>调整大小</n-button
 								>
@@ -170,7 +180,7 @@ const resizeHeight = ref<number | null>(null);
 			<n-grid-item :span="6">
 				<n-card>
 					<!-- 图片列表或详细信息区域 -->
-					<n-button @click="selectDirectory">选择目录</n-button>
+					<n-button type="primary" @click="selectDirectory">选择目录</n-button>
 					<!-- 这里可以放置图片列表 -->
 					<n-list clickable hoverable>
 						<n-list-item
@@ -182,9 +192,6 @@ const resizeHeight = ref<number | null>(null);
 						</n-list-item>
 					</n-list>
 				</n-card>
-				<div>
-					<img :src="encodedPath" />
-				</div>
 			</n-grid-item>
 		</n-grid>
 	</n-space>

@@ -30,7 +30,9 @@ const themeStore = useThemeStore();
 					<ThemeSwitch />
 					<n-card>
 						<router-view></router-view>
-						<router-link to="/image">跳转</router-link>
+						<router-link to="/image">跳转图像编辑</router-link>
+						<br></br>
+						<router-link to="/">跳转主页</router-link>
 					</n-card>
 				</n-message-provider>
 			</n-space>
