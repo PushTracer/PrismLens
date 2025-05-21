@@ -19,13 +19,10 @@ src/assets/scss/
 │   └── _modals.scss       # 模态框样式
 ├── layout/                # 布局层
 │   ├── _titlebar.scss     # 标题栏样式
-│   └── _content.scss      # 主内容样式
+│   └── _app.scss          # 主内容样式
 ├── pages/                 # 页面层
 │   ├── _home.scss         # 首页特定样式
 │   └── _imageview.scss    # 图片窗口样式
-├── themes/                # 主题层
-│   ├── _light.scss        # 亮色主题
-│   └── _dark.scss         # 暗色主题
 └── main.scss              # 主文件，导入所有模块
  */
 ```

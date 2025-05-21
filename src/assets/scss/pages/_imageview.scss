@@ -4,3 +4,28 @@
 	width: 100%;
 	display: flex;
 }
+.n-space {
+	height: 100%;
+	width: 100%;
+}
+.image-display-area {
+	height: 100%;
+	display: flex;
+	justify-content: center; /* 水平居中 */
+	align-items: center; /* 垂直居中 */
+	overflow: hidden; /* 防止溢出 */
+}
+.imageshow {
+	width: 100%; /* 占满容器宽度 */
+	height: 100%; /* 占满容器高度 */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.imageshow img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain; /* 保证完整显示，等比例缩放 */
+	display: block;
+}
