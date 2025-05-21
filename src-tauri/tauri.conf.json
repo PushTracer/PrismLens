@@ -19,7 +19,7 @@
       }
     ],
     "security": {
-      "csp": "default-src * 'unsafe-inline' 'unsafe-eval' data: asset: http://asset.localhost",
+      "csp": "default-src * 'unsafe-inline' 'unsafe-eval' data: asset: http://asset.localhost; style-src * 'unsafe-inline'",
       "assetProtocol": {
         "enable": true,
         "scope": [
