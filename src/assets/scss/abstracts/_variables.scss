@@ -1,14 +1,14 @@
 // 字体家族
-$font-family-base: 'Lato', 'PingFang SC', 'Microsoft YaHei', sans-serif;  // 通用字体
-$font-family-code: 'Fira Code', 'Source Code Pro', monospace;  // 等宽字体
+$font-family-base: "Lato", "PingFang SC", "Microsoft YaHei", sans-serif; // 通用字体
+$font-family-code: "Fira Code", "Source Code Pro", monospace; // 等宽字体
 
 // 字体大小
-$font-size-xs: 12px;    // 特小号
-$font-size-sm: 14px;    // 小号
-$font-size-base: 16px;  // 基础
-$font-size-lg: 18px;    // 大号
-$font-size-xl: 20px;    // 特大号
-$font-size-xxl: 24px;   // 超大号
+$font-size-xs: 12px; // 特小号
+$font-size-sm: 14px; // 小号
+$font-size-base: 16px; // 基础
+$font-size-lg: 18px; // 大号
+$font-size-xl: 20px; // 特大号
+$font-size-xxl: 24px; // 超大号
 
 // 字重
 $font-weight-light: 300;
@@ -17,6 +17,16 @@ $font-weight-medium: 500;
 $font-weight-bold: 700;
 
 // 行高
-$line-height-tight: 1.2;    // 紧凑
-$line-height-base: 1.5;     // 基础
-$line-height-loose: 1.8;    // 宽松
+$line-height-tight: 1.2; // 紧凑
+$line-height-base: 1.5; // 基础
+$line-height-loose: 1.8; // 宽松
+
+// 图片内容尺寸
+$image-content-height: calc(100% - 145px); // 图片内容高度
+
+// 图片列表尺寸
+$image-list-height: 145px; // 图片列表项大小
+$image-list-content-height: 145px; // 图片列表项大小
+$image-list-item-height: 135px; // 图片列表项内容大小
+$image-list-item-width: 160px; // 图片列表项内容大小
+$image-list-padding: 10px; // 以此控制图片与边框的距离

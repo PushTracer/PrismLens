@@ -63,12 +63,8 @@ async function selectImage() {
 </script>
 <template>
 	<div class="imageview">
-		<n-grid :cols="24" :x-gap="12">
-			<n-grid-item :span="6">
-				<!-- 图片列表 -->
-				<ImageList />
-			</n-grid-item>
-			<n-grid-item :span="18" class="image-display-area">
+		<n-layout vertical>
+			<div class="image-display-area">
 				<!-- 图片显示区域和操作按钮 -->
 				<template v-if="imageStore.currentImage">
 					<!-- 图片显示 -->
@@ -93,8 +89,11 @@ async function selectImage() {
 						</template>
 					</n-empty>
 				</template>
-			</n-grid-item>
-		</n-grid>
+			</div>
+			<div class="imagelist">
+				<ImageList />
+			</div>
+		</n-layout>
 	</div>
 </template>
 <style scoped></style>

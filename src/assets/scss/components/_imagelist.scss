@@ -1,7 +1,49 @@
+@use "../abstracts/variables" as v;
+
 .imagelist {
-	.n-card {
-		:deep(.n-card__content) {
-			padding: 0;
+	width: 100%;
+	height: v.$image-list-height;
+	overflow: hidden;
+	display: flex;
+	align-items: center; /* 垂直居中 */
+
+	.imagelist-content {
+		height: v.$image-list-content-height !important;
+		margin-left: 5px !important;
+		display: flex;
+		align-items: center; /* 垂直居中 */
+		flex-direction: row;
+		gap: 10px;
+	}
+
+	.image-item {
+		height: v.$image-list-item-height;
+		width: v.$image-list-item-width;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		padding: v.$image-list-padding;
+		border: 1px solid #eee;
+		border-radius: 8px;
+		transition: all 0.3s ease;
+		overflow: hidden;
+
+		&:hover {
+			transform: scale(1.05); /* 整体缩放而不是向上移动 */
+			box-shadow: 0 0 15px rgba(139, 92, 246, 0.5); /* 紫色阴影效果 */
+			border-color: #8b5cf6;
+
+			.thumbnail {
+				transform: scale(1.05); /* 图片稍微放大 */
+			}
 		}
+	}
+
+	.thumbnail {
+		max-width: 100%;
+		max-height: 100%;
+		object-fit: contain;
+		border-radius: 4px;
+		transition: transform 0.3s ease;
 	}
 }
