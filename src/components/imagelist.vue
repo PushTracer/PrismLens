@@ -71,10 +71,14 @@ const { list, containerProps, wrapperProps } = useVirtualList(imageListRef, {
 
 		<div v-bind="containerProps">
 			<div v-bind="wrapperProps" class="imagelist-content">
-				<n-card v-for="item in list" :key="item.index" class="image-item">
+				<n-card
+					v-for="item in list"
+					:key="item.index"
+					class="image-item"
+					@click="showImage(item.data.path)"
+				>
 					<img
 						:src="convertFileSrc(item.data.path)"
-						@click="showImage(item.data.path)"
 						alt="列表图片"
 						class="thumbnail"
 					/>
