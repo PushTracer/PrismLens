@@ -22,11 +22,11 @@ $line-height-base: 1.5; // 基础
 $line-height-loose: 1.8; // 宽松
 
 // 图片内容尺寸
-$image-content-height: calc(100% - 145px); // 图片内容高度
+$image-content-height: calc(100% - 105px); // 图片内容高度
 
 // 图片列表尺寸
-$image-list-height: 145px; // 图片列表项大小
-$image-list-content-height: 145px; // 图片列表项大小
-$image-list-item-height: 135px; // 图片列表项内容大小
-$image-list-item-width: 160px; // 图片列表项内容大小
-$image-list-padding: 10px; // 以此控制图片与边框的距离
+$image-list-height: 105px; // 图片列表项大小
+$image-list-content-height: 105px; // 图片列表项大小
+$image-list-item-height: 95px; // 图片列表项内容大小
+$image-list-item-width: 100px; // 图片列表项内容大小
+$image-list-padding: 0px; // 以此控制图片与边框的距离

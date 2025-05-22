@@ -7,6 +7,12 @@
 	display: flex;
 	align-items: center; /* 垂直居中 */
 
+	.n-card__content {
+		padding: 0 !important; // 确保去除内边距
+		display: flex;
+		align-items: center; /* 垂直居中 */
+	}
+
 	.imagelist-content {
 		height: v.$image-list-content-height !important;
 		margin-left: 5px !important;
