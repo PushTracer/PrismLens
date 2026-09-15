@@ -1,18 +1,22 @@
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from "vue";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useThemeStore } from "../store";
+import type { UnlistenFn } from "@tauri-apps/api/event";
 import {
 	MinusOutlined,
 	FullscreenOutlined,
 	CloseOutlined,
 	FullscreenExitOutlined,
 } from "@vicons/antd";
-import { ref } from "vue";
+import { useThemeStore } from "../store";
 
 // 获取当前窗口实例
 const appWindow = getCurrentWindow();
 // 获取主题store
 const themeStore = useThemeStore();
+
+const isMaximized = ref(false);
+let unlistenResize: UnlistenFn | undefined;
 
 /**
  * 处理窗口最小化
@@ -25,13 +29,9 @@ const handleMinimize = async () => {
  * 处理窗口最大化/还原
  */
 const handleMaximize = async () => {
-	if (await appWindow.isMaximized()) {
-		await appWindow.unmaximize();
-		isMaximized.value = false; // 手动更新状态
-	} else {
-		await appWindow.maximize();
-		isMaximized.value = true; // 手动更新状态
-	}
+	await appWindow.toggleMaximize();
+	const maximized = await appWindow.isMaximized();
+	isMaximized.value = maximized;
 };
 
 /**
@@ -41,31 +41,17 @@ const handleClose = async () => {
 	await appWindow.close();
 };
 
-const isMaximized = ref(false);
+onMounted(async () => {
+	isMaximized.value = await appWindow.isMaximized();
+	// 监听窗口尺寸变化，同步最大化图标状态
+	unlistenResize = await appWindow.onResized(async () => {
+		isMaximized.value = await appWindow.isMaximized();
+	});
+});
 
-// // 存储解除监听的函数
-// const unlisten = ref<(() => void)[]>([]);
-
-// onMounted(async () => {
-// 	isMaximized.value = await appWindow.isMaximized();
-// 	// 监听窗口状态变化
-// 	unlisten.value.push(
-// 		await appWindow.listen("tauri://window-event", (event: any) => {
-// 			if (event.event === "maximize") {
-// 				isMaximized.value = true;
-// 				console.log("maximize event triggered");
-// 			} else if (event.event === "unmaximize") {
-// 				isMaximized.value = false;
-// 				console.log("unmaximize event triggered");
-// 			}
-// 		})
-// 	);
-// });
-
-// onUnmounted(() => {
-// 	// 解除所有事件监听
-// 	unlisten.value.forEach((fn) => fn());
-// });
+onUnmounted(() => {
+	unlistenResize?.();
+});
 </script>
 
 <template>
@@ -114,5 +100,5 @@ const isMaximized = ref(false);
 </template>
 
 <style scoped>
-/* Styles moved to _titlebar.scss */
+/* 样式位于 assets/scss/layout/_titlebar.scss */
 </style>

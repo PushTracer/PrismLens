@@ -3,9 +3,30 @@
 .imagelist {
 	width: 100%;
 	height: v.$image-list-height;
+	flex: none;
 	overflow: hidden;
 	display: flex;
-	align-items: center; /* 垂直居中 */
+	align-items: center;
+
+	.toolbar {
+		flex: none;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		padding: 0 12px;
+	}
+
+	.image-count {
+		font-size: 12px;
+		white-space: nowrap;
+		color: #888;
+	}
+
+	.imagelist-container {
+		flex: 1;
+		min-width: 0;
+	}
 
 	.n-card__content {
 		padding: 0 !important; // 确保去除内边距

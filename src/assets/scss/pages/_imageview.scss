@@ -1,14 +1,23 @@
-@use "../abstracts/variables" as v;
-
 .imageview {
-	// margin-top: 32px;
 	height: 100%;
 	width: 100%;
 	display: flex;
-}
-.n-space {
-	height: 100%;
-	width: 100%;
+
+	// n-layout 内部结构需要逐层撑满，才能让显示区自适应剩余高度
+	.n-layout {
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.n-layout-scroll-container {
+		flex: 1;
+		min-height: 0;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+	}
 }
 
 .imagelist img {
@@ -21,12 +30,23 @@
 }
 
 .image-display-area {
-	height: v.$image-content-height;
+	flex: 1;
+	min-height: 0;
 	display: flex;
 	justify-content: center; /* 水平居中 */
 	align-items: center; /* 垂直居中 */
 	overflow: hidden; /* 防止溢出 */
+	touch-action: none; /* 指针拖拽平移 */
+
+	&.pannable {
+		cursor: grab;
+	}
+
+	&.grabbing {
+		cursor: grabbing;
+	}
 }
+
 .imageshow {
 	width: 100%; /* 占满容器宽度 */
 	height: 100%; /* 占满容器高度 */
@@ -40,4 +60,7 @@
 	max-height: 100%;
 	object-fit: contain; /* 保证完整显示，等比例缩放 */
 	display: block;
+	user-select: none;
+	-webkit-user-drag: none;
+	will-change: transform;
 }

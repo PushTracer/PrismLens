@@ -3,7 +3,12 @@ use image::ImageFormat;
 use image::ImageReader;
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+
+/// 支持的图片格式扩展名
+pub const SUPPORTED_IMAGE_EXTENSIONS: [&str; 9] = [
+    "jpg", "jpeg", "png", "gif", "webp", "bmp", "ico", "tiff", "tif",
+];
 
 /// 图片信息结构体
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -48,6 +53,44 @@ pub enum ImageError {
 /// 图片处理结果类型
 pub type Result<T> = std::result::Result<T, ImageError>;
 
+/// 判断是否为受支持的图片文件
+fn is_supported_image(path: &Path) -> bool {
+    path.is_file()
+        && path
+            .extension()
+            .and_then(|ext| ext.to_str())
+            .map(|ext| SUPPORTED_IMAGE_EXTENSIONS.contains(&ext.to_lowercase().as_str()))
+            .unwrap_or(false)
+}
+
+/// 读取文件最后修改时间（Unix 秒），获取失败时返回 0
+fn modified_secs(metadata: &fs::Metadata) -> u64 {
+    metadata
+        .modified()
+        .map(|time| {
+            time.duration_since(std::time::UNIX_EPOCH)
+                .unwrap_or_default()
+                .as_secs()
+        })
+        .unwrap_or(0)
+}
+
+/// 校验调用方传入的输出路径，确保目录存在且路径非空
+fn validate_output_path(output_path: &str) -> Result<PathBuf> {
+    if output_path.trim().is_empty() {
+        return Err(ImageError::InvalidPath(output_path.to_string()));
+    }
+
+    let path = PathBuf::from(output_path);
+    if let Some(parent) = path.parent() {
+        if !parent.as_os_str().is_empty() && !parent.exists() {
+            return Err(ImageError::InvalidPath(output_path.to_string()));
+        }
+    }
+
+    Ok(path)
+}
+
 /// 读取图片信息
 pub fn read_image_info(path: &str) -> Result<ImageInfo> {
     let path_obj = Path::new(path);
@@ -78,16 +121,6 @@ pub fn read_image_info(path: &str) -> Result<ImageInfo> {
         .unwrap_or("unknown")
         .to_lowercase();
 
-    // 获取修改时间
-    let modified = metadata
-        .modified()
-        .map(|time| {
-            time.duration_since(std::time::UNIX_EPOCH)
-                .unwrap_or_default()
-                .as_secs()
-        })
-        .unwrap_or(0);
-
     Ok(ImageInfo {
         path: path.to_string(),
         name,
@@ -95,7 +128,7 @@ pub fn read_image_info(path: &str) -> Result<ImageInfo> {
         height: dimensions.1,
         format,
         size: metadata.len(),
-        modified,
+        modified: modified_secs(&metadata),
     })
 }
 
@@ -109,23 +142,13 @@ pub fn read_image_list(dir_path: &str) -> Result<Vec<ImageInfo>> {
 
     let mut images = Vec::new();
 
-    // 支持的图片格式扩展名
-    let supported_formats = [
-        "jpg", "jpeg", "png", "gif", "webp", "bmp", "ico", "tiff", "tif",
-    ];
-
     for entry in fs::read_dir(path)? {
         let entry = entry?;
         let path = entry.path();
 
-        // 检查是否为文件且扩展名是支持的图片格式
-        if path.is_file() {
-            if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
-                if supported_formats.contains(&ext.to_lowercase().as_str()) {
-                    if let Ok(info) = read_image_info(path.to_str().unwrap_or_default()) {
-                        images.push(info);
-                    }
-                }
+        if is_supported_image(&path) {
+            if let Ok(info) = read_image_info(path.to_str().unwrap_or_default()) {
+                images.push(info);
             }
         }
     }
@@ -142,93 +165,42 @@ pub fn get_directory_images(dir_path: &str) -> Result<Vec<ImageBasicInfo>> {
     }
 
     let mut images = Vec::new();
-    let supported_formats = [
-        "jpg", "jpeg", "png", "gif", "webp", "bmp", "ico", "tiff", "tif",
-    ];
 
     for entry in fs::read_dir(path)? {
         let entry = entry?;
         let path = entry.path();
 
-        if path.is_file() {
-            if let Some(ext) = path.extension().and_then(|e| e.to_str()) {
-                if supported_formats.contains(&ext.to_lowercase().as_str()) {
-                    let metadata = fs::metadata(&path)?;
-                    let name = path
-                        .file_name()
-                        .and_then(|n| n.to_str())
-                        .unwrap_or("unknown")
-                        .to_string();
-
-                    let modified = metadata
-                        .modified()
-                        .map(|time| {
-                            time.duration_since(std::time::UNIX_EPOCH)
-                                .unwrap_or_default()
-                                .as_secs()
-                        })
-                        .unwrap_or(0);
-
-                    images.push(ImageBasicInfo {
-                        path: path.to_str().unwrap_or_default().to_string(),
-                        name,
-                        size: metadata.len(),
-                        modified,
-                    });
-                }
-            }
+        if !is_supported_image(&path) {
+            continue;
         }
+
+        let metadata = fs::metadata(&path)?;
+        let name = path
+            .file_name()
+            .and_then(|n| n.to_str())
+            .unwrap_or("unknown")
+            .to_string();
+
+        images.push(ImageBasicInfo {
+            path: path.to_string_lossy().into_owned(),
+            name,
+            size: metadata.len(),
+            modified: modified_secs(&metadata),
+        });
     }
+
+    // 按文件名排序，保证展示顺序稳定
+    images.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
 
     Ok(images)
 }
 
-/// 旋转图片
-pub fn rotate_image(path: &str, angle: i32) -> Result<String> {
-    // 读取图片
-    let mut img = image::open(path)?;
+/// 转换图片格式，保存到调用方指定的路径
+pub fn convert_image_format(path: &str, format: &str, output_path: &str) -> Result<String> {
+    let format = format.to_lowercase();
 
-    // 根据角度旋转
-    img = match angle {
-        90 => img.rotate90(),
-        180 => img.rotate180(),
-        270 => img.rotate270(),
-        _ => return Err(ImageError::Other(format!("不支持的旋转角度: {}", angle))),
-    };
-
-    // 创建输出路径
-    let path_obj = Path::new(path);
-    let file_stem = path_obj
-        .file_stem()
-        .and_then(|s| s.to_str())
-        .unwrap_or("image");
-
-    let extension = path_obj
-        .extension()
-        .and_then(|e| e.to_str())
-        .unwrap_or("png");
-
-    let parent = path_obj.parent().unwrap_or(Path::new(""));
-    let output_path = parent.join(format!("{}_rotated.{}", file_stem, extension));
-
-    // 保存图片
-    img.save(&output_path)?;
-
-    Ok(output_path.to_str().unwrap_or_default().to_string())
-}
-
-/// 转换图片格式
-pub fn convert_image_format(path: &str, format: &str) -> Result<String> {
-    // 读取图片
-    let mut img = image::open(path)?;
-
-    // 如果目标格式是 JPEG，去除透明度通道
-    if format.to_lowercase() == "jpg" || format.to_lowercase() == "jpeg" {
-        let rgb_img = img.to_rgb8(); // 返回 RgbImage
-        img = DynamicImage::ImageRgb8(rgb_img); // 包装成 DynamicImage
-    }
     // 获取目标格式
-    let target_format = match format.to_lowercase().as_str() {
+    let target_format = match format.as_str() {
         "jpg" | "jpeg" => ImageFormat::Jpeg,
         "png" => ImageFormat::Png,
         "gif" => ImageFormat::Gif,
@@ -238,47 +210,39 @@ pub fn convert_image_format(path: &str, format: &str) -> Result<String> {
         _ => return Err(ImageError::UnsupportedFormat),
     };
 
-    // 创建输出路径
-    let path_obj = Path::new(path);
-    let file_stem = path_obj
-        .file_stem()
-        .and_then(|s| s.to_str())
-        .unwrap_or("image");
+    let output_path = validate_output_path(output_path)?;
 
-    let parent = path_obj.parent().unwrap_or(Path::new(""));
-    let output_path = parent.join(format!("{}.{}", file_stem, format.to_lowercase()));
+    let img = image::open(path)?;
+
+    // 如果目标格式是 JPEG，去除透明度通道
+    let img = if matches!(target_format, ImageFormat::Jpeg) {
+        DynamicImage::ImageRgb8(img.to_rgb8())
+    } else {
+        img
+    };
 
     // 保存图片
     img.save_with_format(&output_path, target_format)?;
 
-    Ok(output_path.to_str().unwrap_or_default().to_string())
+    Ok(output_path.to_string_lossy().into_owned())
 }
 
-/// 调整图片大小
-pub fn resize_image(path: &str, width: u32, height: u32) -> Result<String> {
+/// 调整图片大小，保存到调用方指定的路径
+pub fn resize_image(path: &str, width: u32, height: u32, output_path: &str) -> Result<String> {
+    if width == 0 || height == 0 {
+        return Err(ImageError::Other("宽度和高度必须大于 0".to_string()));
+    }
+
+    let output_path = validate_output_path(output_path)?;
+
     // 读取图片
     let img = image::open(path)?;
 
     // 调整大小
     let resized = img.resize(width, height, image::imageops::FilterType::Lanczos3);
 
-    // 创建输出路径
-    let path_obj = Path::new(path);
-    let file_stem = path_obj
-        .file_stem()
-        .and_then(|s| s.to_str())
-        .unwrap_or("image");
-
-    let extension = path_obj
-        .extension()
-        .and_then(|e| e.to_str())
-        .unwrap_or("png");
-
-    let parent = path_obj.parent().unwrap_or(Path::new(""));
-    let output_path = parent.join(format!("{}_resized.{}", file_stem, extension));
-
     // 保存图片
     resized.save(&output_path)?;
 
-    Ok(output_path.to_str().unwrap_or_default().to_string())
+    Ok(output_path.to_string_lossy().into_owned())
 }

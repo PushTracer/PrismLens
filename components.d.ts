@@ -8,17 +8,20 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Imagelist: typeof import('./src/components/imagelist.vue')['default']
-    Imageoperation: typeof import('./src/components/imageoperation.vue')['default']
+    ImageList: typeof import('./src/components/ImageList.vue')['default']
+    ImageOperation: typeof import('./src/components/ImageOperation.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NEmpty: typeof import('naive-ui')['NEmpty']
     NIcon: typeof import('naive-ui')['NIcon']
+    NInputNumber: typeof import('naive-ui')['NInputNumber']
     NLayout: typeof import('naive-ui')['NLayout']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
+    NSpace: typeof import('naive-ui')['NSpace']
+    NText: typeof import('naive-ui')['NText']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Themeswitch: typeof import('./src/components/themeswitch.vue')['default']
-    Titlebar: typeof import('./src/components/titlebar.vue')['default']
+    ThemeSwitch: typeof import('./src/components/ThemeSwitch.vue')['default']
+    TitleBar: typeof import('./src/components/TitleBar.vue')['default']
   }
 }

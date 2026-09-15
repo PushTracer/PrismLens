@@ -1,8 +1,7 @@
 <script setup lang="ts">
-// import { ref } from "vue";
 import { NConfigProvider, darkTheme } from "naive-ui";
-import ThemeSwitch from "./components/themeswitch.vue";
-import TitleBar from "./components/titlebar.vue";
+import ThemeSwitch from "./components/ThemeSwitch.vue";
+import TitleBar from "./components/TitleBar.vue";
 
 import { useThemeStore } from "./store";
 
@@ -26,9 +25,6 @@ const themeStore = useThemeStore();
 					<ThemeSwitch />
 
 					<router-view></router-view>
-					<!-- <router-link to="/image">跳转图像编辑</router-link>
-          <br></br>
-          <router-link to="/">跳转主页</router-link> -->
 				</n-message-provider>
 			</div>
 		</n-layout>
@@ -36,13 +32,6 @@ const themeStore = useThemeStore();
 </template>
 
 <style scoped>
-.n-card {
-	:deep(.n-card__content),
-	:deep(.n-card__footer) {
-		padding: 0 !important;
-	}
-}
-
 .content {
 	margin-top: 35px;
 	height: calc(100vh - 35px);

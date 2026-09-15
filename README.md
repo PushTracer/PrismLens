@@ -6,16 +6,18 @@
 
 PrismLens是一款基于Tauri + Vue3 + TypeScript开发的现代化图片查看工具。它不仅提供了强大的图片查看和处理功能，还计划集成社交分享和AI增强特性，致力于打造一个高性能、易用性强的图片管理工具。像棱镜镜头一样，不仅能清晰展现图片的每一个细节，更能展现图片的多彩视角。
 
+> 项目功能、架构与设计细节见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
+
 ## 核心特性
 
 ### 1. 图片基础功能
 
 - 🖼️ 多格式图片查看和浏览
-- 🔄 基础图片操作
+- 🔄 基础图片操作（纯视图变换，不修改原文件）
   - 旋转
-  - 缩放
-  - 拖拽
-- 🎨 图片格式转换
+  - 缩放（按钮 / 滚轮）
+  - 拖拽平移
+- 🎨 图片格式转换（"另存为"导出，不覆盖原图）
 - ✂️ 图片裁剪
 
 ### 2. 社交分享功能
@@ -43,19 +45,18 @@ PrismLens是一款基于Tauri + Vue3 + TypeScript开发的现代化图片查看�
 
 ### 后端技术
 
-- Tauri (Rust)
-- tokio
+- Tauri 2 (Rust)
 - image-rs
 - serde
-- reqwest
+- thiserror
+- tauri-plugin-dialog / tauri-plugin-opener
 
-## 性能优化
+## 性能设计
 
-- 📊 Rust处理性能密集型任务
-- 🚀 WebAssembly优化
-- 🔄 图片懒加载与预加载
-- 📱 虚拟滚动
-- 💾 智能缓存机制
+- 📊 Rust处理性能密集型任务（命令层通过 `spawn_blocking` 调度，避免阻塞异步运行时）
+- 🔄 图片经 Tauri asset 协议直接加载，不经过 IPC 传输字节
+- 📱 缩略图列表使用虚拟滚动，避免大目录一次性挂载 DOM
+- 💾 图片懒加载与预加载（规划中）
 
 ## 开发计划
 

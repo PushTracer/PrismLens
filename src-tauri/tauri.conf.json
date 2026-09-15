@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "main",
+        "title": "PrismLens",
         "width": 1200,
         "height": 700,
         "decorations": false
