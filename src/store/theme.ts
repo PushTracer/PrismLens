@@ -1,85 +1,108 @@
+import { watch } from "vue";
 import { defineStore } from "pinia";
-import { GlobalThemeOverrides } from "naive-ui";
-import { useStorage } from "@vueuse/core";
 import { useOsTheme } from "naive-ui";
+import type { GlobalThemeOverrides } from "naive-ui";
+import { useStorage } from "@vueuse/core";
+
+export type ThemeMode = "light" | "dark";
+
+const FONT_FAMILY = '"Lato", "PingFang SC", "Microsoft YaHei", sans-serif';
 
 /**
  * 主题相关的状态管理
+ * 主题值写入 localStorage，并同步到 <html data-theme>，供全局 SCSS 变量使用
  */
 export const useThemeStore = defineStore("theme", () => {
-	const theme = useStorage("color-scheme", useOsTheme().value);
+	const osTheme = useOsTheme();
+	const theme = useStorage<ThemeMode>("color-scheme", osTheme.value ?? "light");
 
 	// 亮色主题配置
 	const lightThemeOverrides: GlobalThemeOverrides = {
 		common: {
-			// 主色调：优雅的紫色
 			primaryColor: "#8B5CF6",
 			primaryColorHover: "#A78BFA",
 			primaryColorPressed: "#7C3AED",
 			primaryColorSuppl: "#9333EA",
-			textColor1: "#2C3E50",
-			textColor2: "#34495E",
-			textColor3: "#7F8C8D",
-			// 添加背景色配置
-			bodyColor: "#F8F9FA",
+			textColor1: "#1F2937",
+			textColor2: "#4B5563",
+			textColor3: "#9CA3AF",
+			bodyColor: "#F5F6FA",
 			cardColor: "#FFFFFF",
+			borderRadius: "10px",
+			borderRadiusSmall: "8px",
+			fontFamily: FONT_FAMILY,
 		},
 		Card: {
-			borderRadius: "8px",
-			paddingMedium: "24px",
+			borderRadius: "12px",
 			color: "#FFFFFF",
-			borderColor: "#E3F2FD",
+			borderColor: "#E5E7EB",
 		},
 		Button: {
-			borderRadiusMedium: "4px",
-			heightMedium: "40px",
-			textColor: "#FFFFFF",
-			border: "1px solid #8B5CF6", // 更新边框颜色
+			borderRadiusMedium: "8px",
+			borderRadiusSmall: "6px",
+			heightMedium: "36px",
+			heightSmall: "30px",
 		},
 		Input: {
-			borderRadius: "4px",
-			border: "1px solid #E3F2FD",
+			borderRadius: "8px",
 		},
 		Layout: {
-			color: "#F8F9FA", // 设置布局背景色
+			color: "#F5F6FA",
 			headerColor: "#FFFFFF",
 			footerColor: "#FFFFFF",
+		},
+		Tooltip: {
+			borderRadius: "8px",
 		},
 	};
 
 	// 暗色主题配置
 	const darkThemeOverrides: GlobalThemeOverrides = {
 		common: {
-			primaryColor: "#A78BFA", // 暗色主题下稍微亮一点的紫色
+			primaryColor: "#A78BFA",
 			primaryColorHover: "#C4B5FD",
 			primaryColorPressed: "#8B5CF6",
 			primaryColorSuppl: "#7C3AED",
-			textColor1: "#FFFFFF",
-			textColor2: "#E0E0E0",
-			textColor3: "#BDBDBD",
+			textColor1: "#F3F4F6",
+			textColor2: "#CBD5E1",
+			textColor3: "#8B93A1",
+			bodyColor: "#0F1115",
+			cardColor: "#171A21",
+			borderRadius: "10px",
+			borderRadiusSmall: "8px",
+			fontFamily: FONT_FAMILY,
 		},
 		Card: {
-			borderRadius: "8px",
-			paddingMedium: "24px",
-			color: "#1A1A1A",
-			borderColor: "#333333",
+			borderRadius: "12px",
+			color: "#171A21",
+			borderColor: "#2A2F3A",
 		},
 		Button: {
-			borderRadiusMedium: "4px",
-			heightMedium: "40px",
-			textColor: "#FFFFFF",
-			border: "1px solid #A78BFA", // 更新边框颜色
+			borderRadiusMedium: "8px",
+			borderRadiusSmall: "6px",
+			heightMedium: "36px",
+			heightSmall: "30px",
 		},
 		Input: {
-			borderRadius: "4px",
-			border: "1px solid #333333",
+			borderRadius: "8px",
 		},
 		Layout: {
-			color: "#121212", // 设置暗色布局背景色
-			headerColor: "#1A1A1A",
-			footerColor: "#1A1A1A",
+			color: "#0F1115",
+			headerColor: "#171A21",
+			footerColor: "#171A21",
+		},
+		Tooltip: {
+			borderRadius: "8px",
 		},
 	};
+
+	watch(
+		theme,
+		(value) => {
+			document.documentElement.dataset.theme = value;
+		},
+		{ immediate: true }
+	);
 
 	return {
 		theme,

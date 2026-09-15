@@ -8,35 +8,27 @@ import {
 	CloseOutlined,
 	FullscreenExitOutlined,
 } from "@vicons/antd";
-import { useThemeStore } from "../store";
+import { PrismOutline } from "@vicons/ionicons5";
+import ThemeSwitch from "./ThemeSwitch.vue";
 
 // 获取当前窗口实例
 const appWindow = getCurrentWindow();
-// 获取主题store
-const themeStore = useThemeStore();
 
 const isMaximized = ref(false);
 let unlistenResize: UnlistenFn | undefined;
 
-/**
- * 处理窗口最小化
- */
+/** 最小化窗口 */
 const handleMinimize = async () => {
 	await appWindow.minimize();
 };
 
-/**
- * 处理窗口最大化/还原
- */
+/** 最大化 / 还原窗口 */
 const handleMaximize = async () => {
 	await appWindow.toggleMaximize();
-	const maximized = await appWindow.isMaximized();
-	isMaximized.value = maximized;
+	isMaximized.value = await appWindow.isMaximized();
 };
 
-/**
- * 处理窗口关闭
- */
+/** 关闭窗口 */
 const handleClose = async () => {
 	await appWindow.close();
 };
@@ -55,9 +47,19 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<div class="title-bar" data-tauri-drag-region>
-		<div class="title">PrismLens</div>
+	<div class="title-bar">
+		<div class="titlebar-left" data-tauri-drag-region>
+			<div class="brand" data-tauri-drag-region>
+				<n-icon class="brand-icon" size="16">
+					<PrismOutline />
+				</n-icon>
+				<span class="title">PrismLens</span>
+			</div>
+		</div>
+
 		<div class="window-controls">
+			<ThemeSwitch />
+			<span class="controls-divider"></span>
 			<n-button
 				quaternary
 				circle
@@ -66,9 +68,7 @@ onUnmounted(() => {
 				:focusable="false"
 				@click="handleMinimize"
 			>
-				<n-icon :color="themeStore.theme === 'dark' ? '#FFFFFF' : '#2C3E50'">
-					<MinusOutlined />
-				</n-icon>
+				<n-icon size="16"><MinusOutlined /></n-icon>
 			</n-button>
 			<n-button
 				quaternary
@@ -78,7 +78,7 @@ onUnmounted(() => {
 				:focusable="false"
 				@click="handleMaximize"
 			>
-				<n-icon :color="themeStore.theme === 'dark' ? '#FFFFFF' : '#2C3E50'">
+				<n-icon size="15">
 					<FullscreenExitOutlined v-if="isMaximized" />
 					<FullscreenOutlined v-else />
 				</n-icon>
@@ -87,13 +87,11 @@ onUnmounted(() => {
 				quaternary
 				circle
 				size="small"
-				class="close-btn"
+				class="control-btn close-btn"
 				:focusable="false"
 				@click="handleClose"
 			>
-				<n-icon :color="themeStore.theme === 'dark' ? '#FFFFFF' : '#2C3E50'">
-					<CloseOutlined />
-				</n-icon>
+				<n-icon size="16"><CloseOutlined /></n-icon>
 			</n-button>
 		</div>
 	</div>

@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { dirname, join } from "@tauri-apps/api/path";
 import { save } from "@tauri-apps/plugin-dialog";
 import { useMessage } from "naive-ui";
+import {
+	AddOutline,
+	ChevronDownOutline,
+	DownloadOutline,
+	RefreshOutline,
+	RemoveOutline,
+	ResizeOutline,
+} from "@vicons/ionicons5";
 import { useImageStore } from "../store/images";
 
 const imageStore = useImageStore();
@@ -12,6 +20,20 @@ const message = useMessage();
 // 调整大小的输入框绑定状态
 const resizeWidth = ref<number | null>(null);
 const resizeHeight = ref<number | null>(null);
+
+const zoomPercent = computed(() =>
+	Math.round(imageStore.view.scale * 100)
+);
+
+// 可导出的格式
+const exportOptions = [
+	{ label: "PNG", key: "png" },
+	{ label: "JPG", key: "jpg" },
+	{ label: "WebP", key: "webp" },
+	{ label: "GIF", key: "gif" },
+	{ label: "BMP", key: "bmp" },
+	{ label: "ICO", key: "ico" },
+];
 
 /**
  * 弹出"另存为"对话框，让用户显式选择输出路径
@@ -61,6 +83,11 @@ async function convertFormat(format: string) {
 	}
 }
 
+/** 下拉菜单导出 */
+function handleExportSelect(key: string | number) {
+	convertFormat(String(key));
+}
+
 /**
  * 调整图片大小（另存为，不修改源文件）
  * @param width 目标宽度
@@ -102,72 +129,123 @@ async function resizeImage(width: number, height: number) {
 
 <template>
 	<div class="image-operation">
-		<n-space>
-			<!-- 旋转（仅视图变换，不改动文件） -->
-			<n-button
-				tertiary
-				type="primary"
-				@click="imageStore.rotateView(90)"
-			>
-				旋转 90°
-			</n-button>
-			<n-button
-				tertiary
-				type="primary"
-				@click="imageStore.rotateView(180)"
-			>
-				旋转 180°
-			</n-button>
-			<n-button
-				tertiary
-				type="primary"
-				@click="imageStore.rotateView(270)"
-			>
-				旋转 270°
-			</n-button>
+		<!-- 旋转（仅视图变换，不改动文件） -->
+		<div class="op-group">
+			<span class="op-label">
+				<n-icon size="14"><RefreshOutline /></n-icon>
+				旋转
+			</span>
+			<n-button-group size="small">
+				<n-button
+					title="顺时针旋转 90°"
+					@click="imageStore.rotateView(90)"
+				>
+					90°
+				</n-button>
+				<n-button
+					title="顺时针旋转 180°"
+					@click="imageStore.rotateView(180)"
+				>
+					180°
+				</n-button>
+				<n-button
+					title="顺时针旋转 270°"
+					@click="imageStore.rotateView(270)"
+				>
+					270°
+				</n-button>
+			</n-button-group>
+		</div>
 
-			<!-- 缩放（仅视图变换） -->
-			<n-button tertiary @click="imageStore.zoomOut()">缩小</n-button>
-			<n-text depth="3" class="zoom-text">
-				{{ Math.round(imageStore.view.scale * 100) }}%
-			</n-text>
-			<n-button tertiary @click="imageStore.zoomIn()">放大</n-button>
-			<n-button quaternary @click="imageStore.resetView()">重置</n-button>
+		<span class="op-divider"></span>
 
-			<!-- 转换格式（另存为） -->
-			<n-button tertiary type="info" @click="convertFormat('png')">
-				另存为 PNG
+		<!-- 缩放（仅视图变换） -->
+		<div class="op-group">
+			<span class="op-label">缩放</span>
+			<n-button-group size="small">
+				<n-button :focusable="false" @click="imageStore.zoomOut()">
+					<template #icon>
+						<n-icon><RemoveOutline /></n-icon>
+					</template>
+				</n-button>
+				<n-button
+					class="zoom-value"
+					title="适应窗口"
+					:focusable="false"
+					@click="imageStore.fitView()"
+				>
+					{{ zoomPercent }}%
+				</n-button>
+				<n-button :focusable="false" @click="imageStore.zoomIn()">
+					<template #icon>
+						<n-icon><AddOutline /></n-icon>
+					</template>
+				</n-button>
+			</n-button-group>
+			<n-button size="small" quaternary @click="imageStore.resetView()">
+				重置
 			</n-button>
-			<n-button tertiary type="info" @click="convertFormat('jpg')">
-				另存为 JPG
-			</n-button>
-			<n-button tertiary type="info" @click="convertFormat('webp')">
-				另存为 WebP
-			</n-button>
+		</div>
 
-			<!-- 调整大小（另存为） -->
-			<n-input-number v-model:value="resizeWidth" placeholder="宽度" />
-			<n-input-number v-model:value="resizeHeight" placeholder="高度" />
+		<span class="op-divider"></span>
+
+		<!-- 导出格式（另存为） -->
+		<div class="op-group">
+			<span class="op-label">
+				<n-icon size="14"><DownloadOutline /></n-icon>
+				导出
+			</span>
+			<n-dropdown
+				trigger="click"
+				:options="exportOptions"
+				@select="handleExportSelect"
+			>
+				<n-button size="small" secondary>
+					<template #icon>
+						<n-icon><DownloadOutline /></n-icon>
+					</template>
+					另存为
+					<n-icon class="export-caret" size="14">
+						<ChevronDownOutline />
+					</n-icon>
+				</n-button>
+			</n-dropdown>
+		</div>
+
+		<span class="op-divider"></span>
+
+		<!-- 调整尺寸（另存为） -->
+		<div class="op-group">
+			<span class="op-label">
+				<n-icon size="14"><ResizeOutline /></n-icon>
+				尺寸
+			</span>
+			<n-input-number
+				v-model:value="resizeWidth"
+				size="small"
+				placeholder="宽"
+				:min="1"
+				class="size-input"
+			/>
+			<span class="op-times">×</span>
+			<n-input-number
+				v-model:value="resizeHeight"
+				size="small"
+				placeholder="高"
+				:min="1"
+				class="size-input"
+			/>
 			<n-button
+				size="small"
 				type="primary"
 				@click="resizeImage(resizeWidth || 0, resizeHeight || 0)"
 			>
-				调整大小并另存
+				另存
 			</n-button>
-		</n-space>
+		</div>
 	</div>
 </template>
 
 <style scoped>
-.image-operation {
-	display: flex;
-	justify-content: center;
-	padding: 6px 12px;
-	flex: none;
-}
-
-.zoom-text {
-	min-width: 48px;
-	text-align: center;
-}
+/* 样式位于 assets/scss/components/_imageoperation.scss */
 </style>

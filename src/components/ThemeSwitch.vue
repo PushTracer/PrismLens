@@ -1,52 +1,43 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import { NSwitch } from "naive-ui";
+import { computed } from "vue";
+import { MoonOutline, SunnyOutline } from "@vicons/ionicons5";
 import { useThemeStore } from "../store";
 
 const themeStore = useThemeStore();
-const isDark = ref(themeStore.theme === "dark");
+const isDark = computed(() => themeStore.theme === "dark");
 
-// 开关轨道样式
-const railStyle = ({ checked }: { checked: boolean }) => {
-	const style = {
-		background: checked ? "#18a058" : "#2080f0",
-		"--n-rail-color-hover": checked ? "#36ad6a" : "#4098fc",
-	};
-	return style;
-};
-
-// 主题切换处理
-const handleThemeChange = (value: boolean) => {
-	themeStore.theme = value ? "dark" : "light";
-};
-
-// 监听 store 中的主题变化
-watch(
-	() => themeStore.theme,
-	(newTheme) => {
-		isDark.value = newTheme === "dark";
-	}
-);
+function toggleTheme() {
+	themeStore.theme = isDark.value ? "light" : "dark";
+}
 </script>
 
 <template>
-	<div class="theme-switch">
-		<n-switch
-			v-model:value="isDark"
-			:rail-style="railStyle"
-			@update:value="handleThemeChange"
-		>
-			<template #checked> 🌙 </template>
-			<template #unchecked> ☀️ </template>
-		</n-switch>
-	</div>
+	<n-tooltip :show-arrow="false" :delay="300">
+		<template #trigger>
+			<n-button
+				quaternary
+				circle
+				class="theme-toggle"
+				:focusable="false"
+				@click="toggleTheme"
+			>
+				<n-icon size="18">
+					<SunnyOutline v-if="isDark" />
+					<MoonOutline v-else />
+				</n-icon>
+			</n-button>
+		</template>
+		{{ isDark ? "切换到浅色模式" : "切换到深色模式" }}
+	</n-tooltip>
 </template>
 
-<style>
-.theme-switch {
-	position: fixed;
-	top: 3rem;
-	right: 1rem;
-	z-index: 100;
+<style scoped>
+.theme-toggle {
+	color: var(--text-2);
+}
+
+.theme-toggle:hover {
+	color: var(--accent);
+	background-color: var(--accent-soft) !important;
 }
 </style>

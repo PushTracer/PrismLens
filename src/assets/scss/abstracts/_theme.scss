@@ -1,0 +1,78 @@
+// ---------------------------------------------------------------------------
+// 主题设计令牌（CSS 变量）
+// 由 store/theme.ts 在 <html data-theme="light|dark"> 上切换
+// ---------------------------------------------------------------------------
+
+:root {
+	// 品牌色
+	--accent: #8b5cf6;
+	--accent-2: #6366f1;
+	--accent-3: #06b6d4;
+	--accent-soft: rgba(139, 92, 246, 0.12);
+	--accent-gradient: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+
+	// 背景
+	--bg-body: #f5f6fa;
+	--bg-surface: #ffffff;
+	--bg-elevated: #ffffff;
+	--bg-viewer: #eef0f5;
+	--bg-glass: rgba(255, 255, 255, 0.72);
+
+	// 棋盘格（用于透明图片）
+	--checker-a: #ffffff;
+	--checker-b: #e8ebf1;
+
+	// 边框
+	--border: #e5e7eb;
+	--border-strong: #d1d5db;
+
+	// 文字
+	--text-1: #1f2937;
+	--text-2: #4b5563;
+	--text-3: #9ca3af;
+
+	// 阴影
+	--shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+	--shadow-md: 0 6px 20px rgba(16, 24, 40, 0.1);
+	--shadow-lg: 0 16px 40px rgba(16, 24, 40, 0.16);
+
+	// 其他
+	--scrollbar: rgba(100, 116, 139, 0.35);
+	--scrollbar-hover: rgba(100, 116, 139, 0.55);
+	--titlebar-height: 44px;
+	--list-height: 116px;
+	--radius-sm: 8px;
+	--radius-md: 12px;
+	--radius-lg: 16px;
+}
+
+html[data-theme="dark"] {
+	--accent: #a78bfa;
+	--accent-2: #818cf8;
+	--accent-3: #22d3ee;
+	--accent-soft: rgba(167, 139, 250, 0.16);
+	--accent-gradient: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+
+	--bg-body: #0f1115;
+	--bg-surface: #171a21;
+	--bg-elevated: #1e222b;
+	--bg-viewer: #0b0d11;
+	--bg-glass: rgba(23, 26, 33, 0.72);
+
+	--checker-a: #1b1f27;
+	--checker-b: #151922;
+
+	--border: #2a2f3a;
+	--border-strong: #3a4150;
+
+	--text-1: #f3f4f6;
+	--text-2: #cbd5e1;
+	--text-3: #8b93a1;
+
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+	--shadow-md: 0 6px 20px rgba(0, 0, 0, 0.5);
+	--shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.6);
+
+	--scrollbar: rgba(148, 163, 184, 0.3);
+	--scrollbar-hover: rgba(148, 163, 184, 0.5);
+}

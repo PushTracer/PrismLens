@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { open } from "@tauri-apps/plugin-dialog";
-import { dirname } from "@tauri-apps/api/path";
-import { Image } from "@vicons/ionicons5";
 import { useMessage } from "naive-ui";
 import { useResizeObserver } from "@vueuse/core";
+import {
+	ChevronBackOutline,
+	ChevronForwardOutline,
+	FolderOpenOutline,
+	ImageOutline,
+} from "@vicons/ionicons5";
 import { useImageStore } from "../store/images";
 import ImageList from "../components/ImageList.vue";
 import ImageOperation from "../components/ImageOperation.vue";
@@ -51,6 +54,44 @@ const imageStyle = computed(() => ({
 		: undefined,
 	transform: `translate(${imageStore.view.x}px, ${imageStore.view.y}px) rotate(${imageStore.view.rotation}deg)`,
 }));
+
+/** 人类可读的文件大小 */
+function formatSize(bytes: number): string {
+	if (!bytes) return "0 B";
+	const units = ["B", "KB", "MB", "GB"];
+	const i = Math.floor(Math.log(bytes) / Math.log(1024));
+	return `${(bytes / Math.pow(1024, i)).toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
+}
+
+/** 时间戳（秒）格式化为本地时间 */
+function formatTime(seconds: number): string {
+	if (!seconds) return "-";
+	const date = new Date(seconds * 1000);
+	const pad = (n: number) => String(n).padStart(2, "0");
+	return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+		date.getDate()
+	)} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+/** 当前图片的元信息条目 */
+const infoItems = computed(() => {
+	const img = imageStore.currentImage;
+	if (!img) return [];
+	return [
+		{ label: "尺寸", value: `${img.width} × ${img.height}` },
+		{ label: "格式", value: img.format.toUpperCase() },
+		{ label: "大小", value: formatSize(img.size) },
+		{ label: "修改", value: formatTime(img.modified) },
+	];
+});
+
+/** 当前图片在列表中的位置文本 */
+const positionText = computed(() => {
+	const total = imageStore.imageList.length;
+	const index = imageStore.currentIndex;
+	if (index < 0 || total === 0) return "";
+	return `${index + 1} / ${total}`;
+});
 
 /** 图片加载完成，记录原始尺寸 */
 function handleImageLoad(event: Event) {
@@ -98,48 +139,84 @@ function handleWheel(event: WheelEvent) {
 	}
 }
 
-/**
- * 选择单张图片，并自动加载其所在目录的图片列表
- */
+/** 选择单张图片 */
 async function selectImage() {
-	const selected = await open({
-		directory: false,
-		multiple: false,
-		// 文件类型过滤器
-		filters: [
-			{
-				name: "图片文件",
-				extensions: [
-					"jpg",
-					"jpeg",
-					"png",
-					"gif",
-					"webp",
-					"bmp",
-					"ico",
-					"tiff",
-					"tif",
-				],
-			},
-		],
-		title: "选择图片",
-	});
-
-	if (!selected) return;
-
 	try {
-		await imageStore.selectImage(selected);
-		const dirPath = await dirname(selected);
-		await imageStore.loadDirectoryImages(dirPath);
+		await imageStore.openImageDialog();
 	} catch (error) {
 		message.error("选择文件失败：" + error);
 	}
 }
+
+/** 选择目录 */
+async function selectDirectory() {
+	try {
+		await imageStore.openDirectoryDialog();
+	} catch (error) {
+		message.error("选择目录失败：" + error);
+	}
+}
+
+/** 切换上一张 / 下一张 */
+async function stepImage(delta: number) {
+	try {
+		await imageStore.stepImage(delta);
+	} catch (error) {
+		message.error("切换图片失败：" + error);
+	}
+}
+
+/** 键盘快捷键：方向键切换、+/- 缩放、0 重置 */
+function handleKeydown(event: KeyboardEvent) {
+	if (!imageStore.currentImage) return;
+
+	switch (event.key) {
+		case "ArrowLeft":
+			event.preventDefault();
+			stepImage(-1);
+			break;
+		case "ArrowRight":
+			event.preventDefault();
+			stepImage(1);
+			break;
+		case "+":
+		case "=":
+			event.preventDefault();
+			imageStore.zoomIn();
+			break;
+		case "-":
+		case "_":
+			event.preventDefault();
+			imageStore.zoomOut();
+			break;
+		case "0":
+			event.preventDefault();
+			imageStore.resetView();
+			break;
+	}
+}
+
+// 预加载相邻图片，切换时更顺滑
+watch(
+	() => imageStore.currentIndex,
+	(index) => {
+		if (index < 0) return;
+		[index - 1, index + 1].forEach((i) => {
+			const item = imageStore.imageList[i];
+			if (!item) return;
+			const preload = new Image();
+			preload.src = convertFileSrc(item.path);
+		});
+	}
+);
+
+onMounted(() => window.addEventListener("keydown", handleKeydown));
+onUnmounted(() => window.removeEventListener("keydown", handleKeydown));
 </script>
 
 <template>
 	<div class="imageview">
-		<n-layout vertical>
+		<div class="viewer-wrap">
 			<div
 				ref="viewportRef"
 				class="image-display-area"
@@ -153,34 +230,104 @@ async function selectImage() {
 				@pointercancel="handlePointerUp"
 				@wheel.prevent="handleWheel"
 			>
-				<!-- 图片显示区域：变换只影响展示，不改动文件 -->
-				<div v-if="imageStore.currentImage" class="imageshow">
-					<img
-						:src="convertFileSrc(imageStore.currentImage.path)"
-						alt="Current Image"
-						:style="imageStyle"
-						draggable="false"
-						@load="handleImageLoad"
-					/>
+				<template v-if="imageStore.currentImage">
+					<!-- 图片显示区域：变换只影响展示，不改动文件 -->
+					<div class="imageshow">
+						<img
+							:src="convertFileSrc(imageStore.currentImage.path)"
+							alt="Current Image"
+							:style="imageStyle"
+							draggable="false"
+							@load="handleImageLoad"
+						/>
+					</div>
+
+					<!-- 图片信息浮层 -->
+					<div class="image-info">
+						<div class="image-info__head">
+							<span class="image-info__name">
+								{{ imageStore.currentImage.name }}
+							</span>
+							<span v-if="positionText" class="image-info__position">
+								{{ positionText }}
+							</span>
+						</div>
+						<div class="image-info__meta">
+							<span
+								v-for="item in infoItems"
+								:key="item.label"
+								class="image-info__item"
+							>
+								<em>{{ item.label }}</em>
+								{{ item.value }}
+							</span>
+						</div>
+					</div>
+
+					<!-- 上一张 / 下一张 -->
+					<n-button
+						v-if="imageStore.canStepBack"
+						circle
+						class="nav-btn nav-btn--prev"
+						:focusable="false"
+						title="上一张 (←)"
+						@pointerdown.stop
+						@click.stop="stepImage(-1)"
+					>
+						<n-icon size="20"><ChevronBackOutline /></n-icon>
+					</n-button>
+					<n-button
+						v-if="imageStore.canStepForward"
+						circle
+						class="nav-btn nav-btn--next"
+						:focusable="false"
+						title="下一张 (→)"
+						@pointerdown.stop
+						@click.stop="stepImage(1)"
+					>
+						<n-icon size="20"><ChevronForwardOutline /></n-icon>
+					</n-button>
+				</template>
+
+				<!-- 空状态 -->
+				<div v-else class="empty-state">
+					<div class="empty-state__icon">
+						<n-icon size="34"><ImageOutline /></n-icon>
+					</div>
+					<h2 class="empty-state__title">还没有打开图片</h2>
+					<p class="empty-state__desc">
+						选择一张图片开始浏览，或直接打开整个文件夹
+					</p>
+					<div class="empty-state__actions">
+						<n-button type="primary" @click="selectImage">
+							<template #icon>
+								<n-icon><ImageOutline /></n-icon>
+							</template>
+							选择图片
+						</n-button>
+						<n-button secondary @click="selectDirectory">
+							<template #icon>
+								<n-icon><FolderOpenOutline /></n-icon>
+							</template>
+							打开文件夹
+						</n-button>
+					</div>
+					<p class="empty-state__hint">
+						支持 JPG / PNG / GIF / WebP / BMP / ICO / TIFF
+					</p>
 				</div>
-				<n-empty v-else description="无内容">
-					<template #icon>
-						<n-icon size="40">
-							<Image />
-						</n-icon>
-					</template>
-					<template #extra>
-						<n-button type="primary" @click="selectImage"> 选择 </n-button>
-					</template>
-				</n-empty>
 			</div>
-			<!-- 图片操作 -->
-			<ImageOperation v-if="imageStore.currentImage" />
-			<div class="imagelist">
-				<ImageList />
-			</div>
-		</n-layout>
+		</div>
+
+		<!-- 图片操作 -->
+		<ImageOperation v-if="imageStore.currentImage" />
+
+		<div class="imagelist-wrap">
+			<ImageList />
+		</div>
 	</div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* 样式位于 assets/scss/pages/_imageview.scss */
+</style>

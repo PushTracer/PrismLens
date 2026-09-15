@@ -1,9 +1,0 @@
-.n-card {
-	// box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); // 添加阴影
-	// background-color: #ffffff; // 设置背景色
-
-	:deep(.n-card__content),
-	:deep(.n-card__footer) {
-		padding: 0 !important; // 确保去除内边距
-	}
-}

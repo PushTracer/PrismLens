@@ -1,4 +1,5 @@
 // Abstracts
+@use "abstracts/theme";
 @use "abstracts/variables";
 // Base
 @use "base/reset";
@@ -8,12 +9,6 @@
 @use "layout/app";
 // Components
 @use "components/imagelist";
-@use "components/n-card";
+@use "components/imageoperation";
 // Pages
 @use "pages/imageview";
-
-// 其他导入暂时注释掉了，等需要的时候再一起改成 @use
-
-// // Themes
-// @import 'themes/light';
-// @import 'themes/dark';

@@ -1,53 +1,84 @@
 .title-bar {
-	height: 35px;
-	background: v-bind('themeStore.theme === "dark" ? "#1a1a1a" : "#ffffff"');
+	height: var(--titlebar-height);
+	background: var(--bg-surface);
+	border-bottom: 1px solid var(--border);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 16px;
+	padding: 0 8px 0 16px;
 	-webkit-user-select: none;
 	user-select: none;
-	// 添加以下属性，让标题栏固定在顶部
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
-	z-index: 999; // 确保标题栏在其他内容之上
+	z-index: 999;
+	transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.titlebar-left {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	height: 100%;
+	flex: 1;
+	min-width: 0;
+}
+
+.brand {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+}
+
+.brand-icon {
+	color: #fff;
+	background: var(--accent-gradient);
+	border-radius: 7px;
+	padding: 5px;
+	box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
 }
 
 .title {
 	font-size: 14px;
-	font-weight: 500;
-	color: v-bind('themeStore.theme === "dark" ? "#FFFFFF" : "#2C3E50"');
+	font-weight: 700;
+	letter-spacing: 0.4px;
+	background: var(--accent-gradient);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
 }
 
 .window-controls {
 	display: flex;
-	gap: 4px;
+	align-items: center;
+	gap: 2px;
+}
+
+.controls-divider {
+	width: 1px;
+	height: 18px;
+	margin: 0 6px;
+	background: var(--border);
 }
 
 .control-btn {
-	transition: all 0.2s ease-in-out;
+	color: var(--text-2);
+	transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .control-btn:hover {
-	background-color: v-bind(
-		'themeStore.theme === "dark" ? "#333333" : "#E8E8E8"'
-	) !important;
+	background-color: var(--accent-soft) !important;
+	color: var(--accent);
 }
 
 .control-btn:active {
-	background-color: v-bind(
-		'themeStore.theme === "dark" ? "#444444" : "#D0D0D0"'
-	) !important;
-}
-
-.close-btn {
-	transition: all 0.2s ease-in-out;
+	background-color: var(--accent-soft) !important;
 }
 
 .close-btn:hover {
-	color: #fff;
+	color: #fff !important;
 	background-color: #e81123 !important;
 }
 

@@ -2,41 +2,40 @@
 	height: 100%;
 	width: 100%;
 	display: flex;
-
-	// n-layout 内部结构需要逐层撑满，才能让显示区自适应剩余高度
-	.n-layout {
-		flex: 1;
-		min-height: 0;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.n-layout-scroll-container {
-		flex: 1;
-		min-height: 0;
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
-	}
+	flex-direction: column;
 }
 
-.imagelist img {
-	// margin: 20px;
-	max-width: 100%;
-	max-height: 100%;
-	object-fit: contain; /* 保证完整显示，等比例缩放 */
-	display: block;
-	margin: 0 auto;
+.viewer-wrap {
+	position: relative;
+	flex: 1;
+	min-height: 0;
+}
+
+.imagelist-wrap {
+	flex: none;
 }
 
 .image-display-area {
-	flex: 1;
-	min-height: 0;
+	position: relative;
+	height: 100%;
+	width: 100%;
 	display: flex;
-	justify-content: center; /* 水平居中 */
-	align-items: center; /* 垂直居中 */
-	overflow: hidden; /* 防止溢出 */
-	touch-action: none; /* 指针拖拽平移 */
+	justify-content: center;
+	align-items: center;
+	overflow: hidden;
+	touch-action: none;
+	background-color: var(--checker-a);
+	background-image: linear-gradient(
+			45deg,
+			var(--checker-b) 25%,
+			transparent 25%
+		),
+		linear-gradient(-45deg, var(--checker-b) 25%, transparent 25%),
+		linear-gradient(45deg, transparent 75%, var(--checker-b) 75%),
+		linear-gradient(-45deg, transparent 75%, var(--checker-b) 75%);
+	background-size: 24px 24px;
+	background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+	transition: background-color 0.3s ease;
 
 	&.pannable {
 		cursor: grab;
@@ -48,8 +47,8 @@
 }
 
 .imageshow {
-	width: 100%; /* 占满容器宽度 */
-	height: 100%; /* 占满容器高度 */
+	width: 100%;
+	height: 100%;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -58,9 +57,144 @@
 .imageshow img {
 	max-width: 100%;
 	max-height: 100%;
-	object-fit: contain; /* 保证完整显示，等比例缩放 */
+	object-fit: contain;
 	display: block;
 	user-select: none;
 	-webkit-user-drag: none;
 	will-change: transform;
+	border-radius: 4px;
+	box-shadow: var(--shadow-lg);
+}
+
+// ---- 图片信息浮层 ----
+.image-info {
+	position: absolute;
+	top: 14px;
+	left: 14px;
+	max-width: min(62%, 440px);
+	padding: 10px 14px;
+	border-radius: var(--radius-md);
+	background: var(--bg-glass);
+	backdrop-filter: blur(10px);
+	border: 1px solid var(--border);
+	box-shadow: var(--shadow-sm);
+	pointer-events: none;
+}
+
+.image-info__head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.image-info__name {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text-1);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.image-info__position {
+	flex: none;
+	font-size: 11px;
+	padding: 1px 8px;
+	border-radius: 999px;
+	background: var(--accent-soft);
+	color: var(--accent);
+}
+
+.image-info__meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 14px;
+	margin-top: 6px;
+}
+
+.image-info__item {
+	font-size: 12px;
+	color: var(--text-2);
+
+	em {
+		font-style: normal;
+		color: var(--text-3);
+		margin-right: 4px;
+	}
+}
+
+// ---- 上一张 / 下一张 ----
+.nav-btn {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 44px !important;
+	height: 44px !important;
+	background: var(--bg-glass) !important;
+	backdrop-filter: blur(10px);
+	border: 1px solid var(--border);
+	color: var(--text-1);
+	box-shadow: var(--shadow-md);
+	opacity: 0.85;
+	transition: opacity 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+	z-index: 5;
+
+	&:hover {
+		opacity: 1;
+		color: var(--accent);
+		border-color: var(--accent);
+	}
+}
+
+.nav-btn--prev {
+	left: 16px;
+}
+
+.nav-btn--next {
+	right: 16px;
+}
+
+// ---- 空状态 ----
+.empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+	text-align: center;
+	padding: 24px;
+}
+
+.empty-state__icon {
+	width: 72px;
+	height: 72px;
+	border-radius: 20px;
+	display: grid;
+	place-items: center;
+	color: var(--accent);
+	background: var(--accent-soft);
+	box-shadow: var(--shadow-sm);
+}
+
+.empty-state__title {
+	font-size: 18px;
+	font-weight: 600;
+	color: var(--text-1);
+}
+
+.empty-state__desc {
+	font-size: 13px;
+	color: var(--text-2);
+	max-width: 320px;
+}
+
+.empty-state__actions {
+	display: flex;
+	gap: 10px;
+	margin-top: 6px;
+}
+
+.empty-state__hint {
+	font-size: 12px;
+	color: var(--text-3);
+	margin-top: 4px;
 }

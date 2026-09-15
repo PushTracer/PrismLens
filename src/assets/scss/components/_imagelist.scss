@@ -1,76 +1,120 @@
-@use "../abstracts/variables" as v;
-
 .imagelist {
+	position: relative;
 	width: 100%;
-	height: v.$image-list-height;
+	height: var(--list-height);
 	flex: none;
-	overflow: hidden;
 	display: flex;
-	align-items: center;
+	align-items: stretch;
+	background: var(--bg-surface);
+	border-top: 1px solid var(--border);
+	overflow: hidden;
+	transition: background-color 0.3s ease, border-color 0.3s ease;
 
 	.toolbar {
 		flex: none;
+		width: 140px;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
+		justify-content: center;
 		gap: 8px;
-		padding: 0 12px;
+		padding: 0 14px;
+		border-right: 1px solid var(--border);
+	}
+
+	.toolbar-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 6px;
 	}
 
 	.image-count {
 		font-size: 12px;
 		white-space: nowrap;
-		color: #888;
+		color: var(--text-3);
 	}
 
 	.imagelist-container {
 		flex: 1;
 		min-width: 0;
-	}
-
-	.n-card__content {
-		padding: 0 !important; // 确保去除内边距
-		display: flex;
-		align-items: center; /* 垂直居中 */
+		height: 100%;
+		overflow-x: auto;
+		overflow-y: hidden;
 	}
 
 	.imagelist-content {
-		height: v.$image-list-content-height !important;
-		margin-left: 5px !important;
+		height: 100% !important;
+		padding: 0 14px;
 		display: flex;
-		align-items: center; /* 垂直居中 */
+		align-items: center;
 		flex-direction: row;
-		gap: 10px;
+		gap: 12px;
 	}
 
 	.image-item {
-		height: v.$image-list-item-height;
-		width: v.$image-list-item-width;
+		position: relative;
+		width: 164px;
+		height: 96px;
+		flex: none;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: v.$image-list-padding;
-		border: 1px solid #eee;
-		border-radius: 8px;
-		transition: all 0.3s ease;
+		border: 1px solid var(--border);
+		border-radius: var(--radius-md);
+		background: var(--bg-elevated);
 		overflow: hidden;
+		cursor: pointer;
+		transition: transform 0.2s ease, box-shadow 0.2s ease,
+			border-color 0.2s ease;
 
 		&:hover {
-			transform: scale(1.05); /* 整体缩放而不是向上移动 */
-			box-shadow: 0 0 15px rgba(139, 92, 246, 0.5); /* 紫色阴影效果 */
-			border-color: #8b5cf6;
+			transform: translateY(-2px);
+			box-shadow: var(--shadow-md);
+			border-color: var(--accent);
+		}
 
-			.thumbnail {
-				transform: scale(1.05); /* 图片稍微放大 */
-			}
+		&.active {
+			border-color: var(--accent);
+			box-shadow: 0 0 0 2px var(--accent-soft),
+				var(--shadow-md);
 		}
 	}
 
 	.thumbnail {
-		max-width: 100%;
-		max-height: 100%;
+		width: 100%;
+		height: 100%;
 		object-fit: contain;
-		border-radius: 4px;
-		transition: transform 0.3s ease;
+		padding: 6px 6px 24px;
+	}
+
+	.image-item__name {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 4px 8px;
+		font-size: 11px;
+		color: var(--text-2);
+		background: var(--bg-glass);
+		backdrop-filter: blur(6px);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-align: center;
+	}
+
+	.list-empty {
+		position: absolute;
+		left: 140px;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		color: var(--text-3);
+		font-size: 13px;
+		pointer-events: none;
 	}
 }

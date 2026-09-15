@@ -246,3 +246,179 @@ pub fn resize_image(path: &str, width: u32, height: u32, output_path: &str) -> R
 
     Ok(output_path.to_string_lossy().into_owned())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use image::{Rgba, RgbaImage};
+
+    /// 创建独立的临时目录，避免并行测试互相干扰
+    fn temp_dir(tag: &str) -> PathBuf {
+        let mut dir = std::env::temp_dir();
+        dir.push(format!("prismlens_test_{}_{}", std::process::id(), tag));
+        let _ = fs::remove_dir_all(&dir);
+        fs::create_dir_all(&dir).expect("创建临时目录失败");
+        dir
+    }
+
+    /// 生成一张纯色测试图片
+    fn create_test_png(path: &Path, width: u32, height: u32) {
+        let mut img = RgbaImage::new(width, height);
+        for pixel in img.pixels_mut() {
+            *pixel = Rgba([120, 80, 200, 255]);
+        }
+        img.save(path).expect("写入测试图片失败");
+    }
+
+    #[test]
+    fn is_supported_image_checks_extension_and_file() {
+        let dir = temp_dir("supported");
+
+        for ext in SUPPORTED_IMAGE_EXTENSIONS {
+            let path = dir.join(format!("pic.{ext}"));
+            fs::write(&path, b"x").unwrap();
+            assert!(is_supported_image(&path), "应支持扩展名 {ext}");
+        }
+
+        // 扩展名大小写不敏感
+        let upper = dir.join("pic.JPEG");
+        fs::write(&upper, b"x").unwrap();
+        assert!(is_supported_image(&upper));
+
+        // 非图片扩展名
+        let txt = dir.join("note.txt");
+        fs::write(&txt, b"x").unwrap();
+        assert!(!is_supported_image(&txt));
+
+        // 不存在的文件
+        assert!(!is_supported_image(&dir.join("ghost.png")));
+
+        // 同名目录不应被当作图片
+        let folder = dir.join("folder.png");
+        fs::create_dir(&folder).unwrap();
+        assert!(!is_supported_image(&folder));
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn validate_output_path_rejects_empty_and_missing_parent() {
+        assert!(matches!(
+            validate_output_path("   "),
+            Err(ImageError::InvalidPath(_))
+        ));
+
+        let dir = temp_dir("validate");
+
+        let ok = dir.join("out.png");
+        assert!(validate_output_path(ok.to_str().unwrap()).is_ok());
+
+        let bad = dir.join("missing").join("out.png");
+        assert!(matches!(
+            validate_output_path(bad.to_str().unwrap()),
+            Err(ImageError::InvalidPath(_))
+        ));
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn read_image_info_returns_dimensions_and_metadata() {
+        let dir = temp_dir("info");
+        let path = dir.join("sample.png");
+        create_test_png(&path, 32, 18);
+
+        let info = read_image_info(path.to_str().unwrap()).unwrap();
+        assert_eq!(info.name, "sample.png");
+        assert_eq!(info.width, 32);
+        assert_eq!(info.height, 18);
+        assert_eq!(info.format, "png");
+        assert!(info.size > 0);
+        assert!(info.modified > 0);
+
+        // 文件不存在
+        let missing = dir.join("nope.png");
+        assert!(matches!(
+            read_image_info(missing.to_str().unwrap()),
+            Err(ImageError::InvalidPath(_))
+        ));
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn get_directory_images_filters_and_sorts() {
+        let dir = temp_dir("list");
+        create_test_png(&dir.join("b.png"), 4, 4);
+        create_test_png(&dir.join("a.png"), 4, 4);
+        fs::write(dir.join("readme.txt"), b"x").unwrap();
+        fs::create_dir(dir.join("sub.png")).unwrap();
+
+        let images = get_directory_images(dir.to_str().unwrap()).unwrap();
+        let names: Vec<&str> = images.iter().map(|i| i.name.as_str()).collect();
+        assert_eq!(names, vec!["a.png", "b.png"]);
+
+        // 目录不存在
+        let missing = dir.join("missing");
+        assert!(matches!(
+            get_directory_images(missing.to_str().unwrap()),
+            Err(ImageError::InvalidPath(_))
+        ));
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn convert_image_format_writes_requested_format() {
+        let dir = temp_dir("convert");
+        let src = dir.join("src.png");
+        create_test_png(&src, 20, 10);
+
+        let out = dir.join("out.jpg");
+        let saved =
+            convert_image_format(src.to_str().unwrap(), "JPG", out.to_str().unwrap())
+                .unwrap();
+        assert_eq!(Path::new(&saved), out.as_path());
+        assert!(out.is_file());
+
+        let detected = ImageReader::open(&out)
+            .unwrap()
+            .with_guessed_format()
+            .unwrap()
+            .format();
+        assert_eq!(detected, Some(ImageFormat::Jpeg));
+
+        // 不支持的格式
+        let bad = dir.join("out.xyz");
+        assert!(matches!(
+            convert_image_format(src.to_str().unwrap(), "xyz", bad.to_str().unwrap()),
+            Err(ImageError::UnsupportedFormat)
+        ));
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn resize_image_respects_size_and_rejects_zero() {
+        let dir = temp_dir("resize");
+        let src = dir.join("src.png");
+        create_test_png(&src, 40, 20);
+
+        let out = dir.join("small.png");
+        resize_image(src.to_str().unwrap(), 20, 10, out.to_str().unwrap()).unwrap();
+
+        let dims = ImageReader::open(&out)
+            .unwrap()
+            .into_dimensions()
+            .unwrap();
+        assert_eq!(dims, (20, 10));
+
+        // 宽高为 0 应被拒绝
+        assert!(matches!(
+            resize_image(src.to_str().unwrap(), 0, 10, out.to_str().unwrap()),
+            Err(ImageError::Other(_))
+        ));
+
+        let _ = fs::remove_dir_all(&dir);
+    }
+}

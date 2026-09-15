@@ -1,6 +1,6 @@
 [package]
 name = "prismlens"
-version = "0.1.0"
+version = "0.2.0"
 description = "PrismLens - 现代化的图片查看工具"
 authors = ["you"]
 edition = "2021"

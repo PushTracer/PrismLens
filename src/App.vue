@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { NConfigProvider, darkTheme } from "naive-ui";
-import ThemeSwitch from "./components/ThemeSwitch.vue";
 import TitleBar from "./components/TitleBar.vue";
 
 import { useThemeStore } from "./store";
@@ -17,26 +16,22 @@ const themeStore = useThemeStore();
 				: themeStore.lightThemeOverrides
 		"
 	>
-		<n-layout class="full-screen-layout">
+		<div class="app-shell">
 			<TitleBar />
-			<div class="content">
-				<!-- nativeUI消息包裹 -->
+			<main class="content">
+				<!-- Naive UI 消息容器 -->
 				<n-message-provider placement="bottom">
-					<ThemeSwitch />
-
 					<router-view></router-view>
 				</n-message-provider>
-			</div>
-		</n-layout>
+			</main>
+		</div>
 	</n-config-provider>
 </template>
 
 <style scoped>
 .content {
-	margin-top: 35px;
-	height: calc(100vh - 35px);
-	/* 减去标题栏高度 */
-	overflow: auto;
-	/* 内容可滚动 */
+	margin-top: var(--titlebar-height);
+	height: calc(100vh - var(--titlebar-height));
+	overflow: hidden;
 }
 </style>
